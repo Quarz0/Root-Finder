@@ -1,0 +1,21 @@
+QMainWindow
+sidewindow
+mplwindow
+equationLabel
+maxItersLabel
+epsLabel
+equationField
+textRadio
+fileRadio
+loadFileButton
+plotButton
+solveButton
+methodsButton
+resultsTable
+resultsTabWidget
+    table1Tab
+    table2Tab
+graphTabWidget
+    graph1Tab
+    graph2Tab
+        
