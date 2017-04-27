@@ -8,7 +8,10 @@ from matplotlib.backends.backend_qt4agg import (
 from matplotlib.figure import Figure
 from sympy import *
 
+from bisection import bisection
+from resultset import ResultSet
 from table import Table
+from util import parseExpr
 
 Ui_MainWindow, QMainWindow = loadUiType('window.ui')
 
@@ -38,16 +41,15 @@ class Main(QMainWindow, Ui_MainWindow):
         for function in functions:
             self.plt.plot(xs, function(xs), c=np.random.rand(3, 1))
         self.plt.axis([-6, 6, -1, 1])
-        # plt.axvline(x=5,c=np.random.rand(3,1))
         self.drawFig(self.fig1)
 
-    def plotVLine(self, vLines):
-        assert type(vLines) is [], "vLines is not of type list!: " + str(type(vLines))
+    def plotVLines(self, vLines):
+        assert type(vLines) is list, "vLines is not of type list!: " + str(type(vLines))
         for line in vLines:
             self.plt.axvline(x=line, c=np.random.rand(3, 1))
 
-    def plotHLine(self, hLines):
-        assert type(hLines) is [], "hLines is not of type list!: " + str(type(hLines))
+    def plotHLines(self, hLines):
+        assert type(hLines) is list, "hLines is not of type list!: " + str(type(hLines))
         for line in hLines:
             self.plt.axhlne(y=line, c=np.random.rand(3, 1))
 
@@ -74,6 +76,15 @@ class Main(QMainWindow, Ui_MainWindow):
                 qTable.setItem(row, column,
                                QtGui.QTableWidgetItem(QtCore.QString("%1").arg(table.getData()[row][column])))
 
+                # QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]))))
+
+    def drawResultSet(self, resultSet):
+        assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
+        self.plotFunctions(resultSet.getEquations())
+        self.plotHLines(resultSet.getHLines())
+        self.plotVLines(resultSet.getVLines())
+        self.drawTable(resultSet.getTable())
+
 
 if __name__ == '__main__':
     import sys
@@ -81,16 +92,6 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     main = Main()
     main.show()
-
-    # add table example
-    t = Table("test", ["Hi", "there", "man"], [[1, 2, 5], [3, 4, 6]])
-    main.drawTable(t)
-    main.drawTable(t)
-
-    # figure example
-    x = Symbol('x')
-    y = sin(x)
-    main.plotPoints([0, 1], [0, 0.5])
-    main.plotFunctions([lambdify(x, y.diff(x), 'numpy'), lambdify(x, sin(x), 'numpy')])
+    main.drawResultSet(bisection(0.00, 0.11, parseExpr("x^3 - 0.165x^2 + 10^-4")))
 
     sys.exit(app.exec_())

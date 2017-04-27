@@ -30,7 +30,7 @@ def bisection(xl, xu, func, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Bisection", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Ea (%)'], iterationRows)
 
-    return ResultSet(table, xr, calcPrecision(ea), executionTime, i, [sympy.lambdify('x', expr, 'numpy')],
+    return ResultSet(table, xr, calcPrecision(ea), executionTime, i, [sympy.lambdify('x', func, 'numpy')],
                      vLines=boundaryLines)
 
 
@@ -40,7 +40,8 @@ def f(x):
     return x ** 3 - 0.165 * x ** 2 + 3.993 * 10 ** -4
 
 
-str = 'x^3 - 0.165x^2 + 10^-4'
-expr = parseExpr(str)
+if __name__ == '__main__':
+    str = 'x^3 - 0.165x^2 + 10^-4'
+    expr = parseExpr(str)
 
-print bisection(0.00, 0.11, expr)
+    print bisection(0.00, 0.11, expr)
