@@ -49,7 +49,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def drawTable(self, table):
         assert type(table) is Table, "table is not of type Table!: " + str(type(table))
         qTable = QtGui.QTableWidget()
-        self.resultsTabWidget.addTab(qTable, QtCore.QString('Tab %s' % chr(ord('A') + self.resultsTabWidget.count())))
+        self.resultsTabWidget.addTab(qTable, QtCore.QString(table.getTitle()))
         setattr(self, 'Table%d' % self.resultsTabWidget.count(), qTable)
 
         qTable.setColumnCount(len(table.getHeader()))
@@ -59,8 +59,8 @@ class Main(QMainWindow, Ui_MainWindow):
         qTable.setSelectionMode(QtGui.QTableWidget.SingleSelection)
 
         qTable.setRowCount(len(table.getData()))
-        for row in range(len(table.getData())):
-            for column in range(len(table.getHeader())):
+        for row in xrange(len(table.getData())):
+            for column in xrange(len(table.getHeader())):
                 qTable.setItem(row, column,
                                QtGui.QTableWidgetItem(QtCore.QString("%1").arg(table.getData()[row][column])))
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     main.show()
 
     # add table example
-    t = Table(["Hi", "there", "man"], [[1, 2, 5], [3, 4, 6]])
+    t = Table("test", ["Hi", "there", "man"], [[1, 2, 5], [3, 4, 6]])
     main.drawTable(t)
     main.drawTable(t)
 
