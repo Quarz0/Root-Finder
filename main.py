@@ -1,4 +1,5 @@
 import numpy as np
+from PyQt4 import QtCore
 from PyQt4 import QtGui
 from PyQt4.uic import loadUiType
 from matplotlib.backends.backend_qt4agg import (
@@ -6,6 +7,8 @@ from matplotlib.backends.backend_qt4agg import (
     NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
 from sympy import *
+
+from table import Table
 
 Ui_MainWindow, QMainWindow = loadUiType('window.ui')
 
@@ -19,6 +22,7 @@ class Main(QMainWindow, Ui_MainWindow):
         super(Main, self).__init__()
         self.setupUi(self)
         self.fig1 = Figure()
+        self.resultsTabWidget.clear()
 
     def drawFig(self, fig):
         self.canvas = FigureCanvas(fig)
@@ -42,11 +46,36 @@ class Main(QMainWindow, Ui_MainWindow):
         for i in range(len(xs)):
             plt.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
 
+    def drawTable(self, table):
+        assert type(table) is Table, "table is not of type Table!: " + str(type(table))
+        qTable = QtGui.QTableWidget()
+        self.resultsTabWidget.addTab(qTable, QtCore.QString('Tab %s' % chr(ord('A') + self.resultsTabWidget.count())))
+        setattr(self, 'Table%d' % self.resultsTabWidget.count(), qTable)
+
+        qTable.setColumnCount(len(table.getHeader()))
+        qTable.setHorizontalHeaderLabels(table.getHeader())
+        qTable.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
+        qTable.setSelectionBehavior(QtGui.QTableWidget.SelectRows)
+        qTable.setSelectionMode(QtGui.QTableWidget.SingleSelection)
+
+        qTable.setRowCount(len(table.getData()))
+        for row in range(len(table.getData())):
+            for column in range(len(table.getHeader())):
+                qTable.setItem(row, column,
+                               QtGui.QTableWidgetItem(QtCore.QString("%1").arg(table.getData()[row][column])))
+
 
 if __name__ == '__main__':
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     main = Main()
     main.show()
+
+    # add table example
+    t = Table(["Hi", "there", "man"], [[1, 2, 5], [3, 4, 6]])
+    main.drawTable(t)
+    main.drawTable(t)
 
     # figure example
     x = Symbol('x')
