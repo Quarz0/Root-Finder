@@ -74,9 +74,7 @@ class Main(QMainWindow, Ui_MainWindow):
         for row in xrange(len(table.getData())):
             for column in xrange(len(table.getHeader())):
                 qTable.setItem(row, column,
-                               QtGui.QTableWidgetItem(QtCore.QString("%1").arg(table.getData()[row][column])))
-
-                # QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]))))
+                               QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]))))
 
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
