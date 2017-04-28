@@ -39,6 +39,7 @@ def parseExpr(expr):
 
 
 def getLineEquation(point1, point2=(), slope=float("nan")):
-    if slope != float("nan"):
-        c = point1[1] - slope * point1[0]
-        return parseExpr(str(slope) + "x+" + str(c))
+    if slope == float("nan"):
+        slope = (point2[1] - point1[1]) / (point2[0] - point1[0])
+    c = point1[1] - slope * point1[0]
+    return parseExpr(str(slope) + "x+" + str(c))

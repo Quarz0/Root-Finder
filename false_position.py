@@ -10,6 +10,7 @@ def false_position(xl, xu, func, iterations=50, eps=0.00001):
         return float('nan')
 
     boundaryLines = [xl, xu]
+    boundaryChordEqn = getLineEquation((xl, evaluateFunc(func, xl)), (xu, evaluateFunc(func, xu)))
     iterationRows = []
     startTime = timeit.default_timer()
     xr_old = None
@@ -19,7 +20,7 @@ def false_position(xl, xu, func, iterations=50, eps=0.00001):
             evaluateFunc(func, xu) - evaluateFunc(func, xl))
 
         if xr_old != None:
-            ea = abs(xr - xr_old) / xr
+            ea = abs(xr - xr_old) / abs(xr)
         else:
             ea = "-"
 
@@ -31,12 +32,15 @@ def false_position(xl, xu, func, iterations=50, eps=0.00001):
         else:
             xl = xr
 
-        if evaluateFunc(func, xr) == 0: ea = 0
+        if evaluateFunc(func, xr) == 0:
+            ea = 0
+            break;
         if i > 0 and ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
     table = Table("False-Position", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Ea (%)'], iterationRows)
-    return ResultSet(table, xr, calcPrecision(ea), executionTime, i, [sympy.lambdify('x', expr, 'numpy')],
+    return ResultSet(table, xr, calcPrecision(ea), executionTime, i,
+                     [sympy.lambdify('x', func, 'numpy'), sympy.lambdify('x', boundaryChordEqn, 'numpy')],
                      vLines=boundaryLines)
 
 
