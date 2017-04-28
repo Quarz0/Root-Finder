@@ -18,4 +18,11 @@ resultsTabWidget
 graphTabWidget
     graph1Tab
     graph2Tab
-        
+
+rootLabel
+precisionLabel
+timeLabel
+rootField
+precisionField
+timeField
+
