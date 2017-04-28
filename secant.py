@@ -1,7 +1,8 @@
+import timeit
+
 from resultset import ResultSet
 from table import Table
 from util import *
-import timeit
 
 
 def secant(x0, x1, func, iterations=50, eps=0.00001):
@@ -26,7 +27,7 @@ def secant(x0, x1, func, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Secant", ['Step', 'xi-1', 'f(xi-1)', 'xi', 'f(xi)', 'xi+1', 'Ea (%)'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea), executionTime, i + 1, [sympy.lambdify('x', expr, 'numpy'),
+    return ResultSet(table, xi, calcPrecision(ea), executionTime, i + 1, [sympy.lambdify('x', func, 'numpy'),
                                                                           sympy.lambdify('x', getLineEquation(
                                                                               (x0, evaluateFunc(func, x0)),
                                                                               slope=evaluateNthDerivative(func, x0, 1)),
@@ -34,8 +35,8 @@ def secant(x0, x1, func, iterations=50, eps=0.00001):
 
 
 # Test
+if __name__ == '__main__':
+    stra = "e^-x - x"
+    expr = parseExpr(stra)
 
-stra = "e^-x - x"
-expr = parseExpr(stra)
-
-print secant(1, 1.01, expr)
+    print secant(1, 1.01, expr)

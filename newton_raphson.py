@@ -33,9 +33,9 @@ def newton_raphson(x0, func, iterations=50, eps=0.00001):
 
 
 # Test
+if __name__ == '__main__':
+    # stra = "x^5 - 11x^4+46x^3 - 90 * x^2 + 81x - 27"
+    stra = "x^3 - 0.165x^2 + 3.993"
+    expr = parseExpr(stra)
 
-# stra = "x^5 - 11x^4+46x^3 - 90 * x^2 + 81x - 27"
-stra = "x^3 - 0.165x^2 + 3.993"
-expr = parseExpr(stra)
-
-print newton_raphson(1.3, expr, eps=0.000001, iterations=100)
+    print newton_raphson(1.3, expr, eps=0.000001, iterations=100)

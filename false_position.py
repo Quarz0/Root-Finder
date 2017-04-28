@@ -34,7 +34,7 @@ def false_position(xl, xu, func, iterations=50, eps=0.00001):
 
         if evaluateFunc(func, xr) == 0:
             ea = 0
-            break;
+            break
         if i > 0 and ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
@@ -46,9 +46,9 @@ def false_position(xl, xu, func, iterations=50, eps=0.00001):
 
 # Test
 
+if __name__ == '__main__':
+    str = 'x^3 - 3x + 1'
+    stra = 'x^3 - 0.165x^2'
+    expr = parseExpr(stra)
 
-str = 'x^3 - 3x + 1'
-stra = 'x^3 - 0.165x^2'
-expr = parseExpr(stra)
-
-print false_position(0, 1, expr, 100, 10 ** -20)
+    print false_position(0, 1, expr, 100, 10 ** -20)

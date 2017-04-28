@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt4agg import (
 from matplotlib.figure import Figure
 from sympy import *
 
-from bisection import bisection
+from false_position import false_position
 from resultset import ResultSet
 from table import Table
 from util import parseExpr
@@ -154,6 +154,6 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     main = Main()
     main.show()
-    main.drawResultSet(bisection(0, 0.5, parseExpr("x^3 - 0.165x^2 ")))
+    main.drawResultSet(false_position(-5, 5, parseExpr("x^3 ")))
 
     sys.exit(app.exec_())
