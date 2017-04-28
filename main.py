@@ -79,7 +79,8 @@ class Main(QMainWindow, Ui_MainWindow):
         for row in xrange(len(table.getData())):
             for column in xrange(len(table.getHeader())):
                 qTable.setItem(row, column,
-                               QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]))))
+                               QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]) if type(
+                                   table.getData()[row][column]) is float else table.getData()[row][column])))
 
     def drawRoot(self, root):
         assert type(root) is float or int, "root is not of type float nor int!: " + str(type(root))

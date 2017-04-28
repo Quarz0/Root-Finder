@@ -10,12 +10,16 @@ class Table(object):
 
     def getTitle(self):
         return self.title
+
     def getHeader(self):
         return self.header
+
     def getData(self):
         return self.data
+
     def getTable(self):
         return self.header + self.data
+
     def __str__(self):
         string = "Table Title: " + str(self.title) + "\n" + str(self.header) + "\n"
         for row in self.data:

@@ -1,7 +1,8 @@
+import timeit
+
 from resultset import ResultSet
 from table import Table
 from util import *
-import timeit
 
 
 def newton_raphson(x0, func, iterations=50, eps=0.00001):
