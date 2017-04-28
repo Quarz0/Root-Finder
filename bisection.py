@@ -30,7 +30,8 @@ def bisection(xl, xu, func, iterations=50, eps=0.00001):
         else:
             xl = xr
 
-        if evaluateFunc(func, xl) * evaluateFunc(func, xr) == 0 or ea < eps: break
+        if evaluateFunc(func, xl) * evaluateFunc(func, xr) == 0: ea = 0
+        if i > 0 and ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
     table = Table("Bisection", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Ea (%)'], iterationRows)

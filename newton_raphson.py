@@ -19,7 +19,8 @@ def newton_raphson(x0, func, iterations=50, eps=0.00001):
 
         xi = xi_1
 
-        if evaluateFunc(func, xi) == 0 or ea < eps: break
+        if evaluateFunc(func, xi) == 0: ea = 0
+        if ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
     table = Table("Newton-Raphson", ['Step', 'xi', 'f(xi)', "f'(xi)", 'xi+1', 'Ea (%)'], iterationRows)
