@@ -45,7 +45,8 @@ def f(x):
     return x ** 3 - 0.165 * x ** 2 + 3.993 * 10 ** -4
 
 
-str = 'x^3 - 0.165x^2 + 10^-4'
-expr = parseExpr(str)
+if __name__ == '__main__':
+    str = 'x^3 - 0.165x^2 + 10^-4'
+    expr = parseExpr(str)
 
-print bisection(0.00, 0.11, expr)
+    print bisection(0.00, 0.11, expr)
