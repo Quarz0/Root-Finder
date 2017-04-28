@@ -26,3 +26,8 @@ def parseExpr(expr):
             modifiedExpr += c
     return sympy.parsing.sympy_parser.parse_expr(modifiedExpr)
 
+def getLineEquation(point1, point2=(), slope=float("nan")):
+    if slope != float("nan"):
+        c = point1[1] - slope * point1[0]
+        return parseExpr(str(slope) + "x+" + str(c))
+
