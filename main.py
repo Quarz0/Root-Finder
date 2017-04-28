@@ -26,7 +26,13 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.fig1 = Figure()
         self.plt = self.fig1.add_subplot(111)
+        self.plt.grid(true)
+        # self.plt.axis([-6, 6, -1, 1])
+        self.plt.autoscale(true, tight=false)
         self.resultsTabWidget.clear()
+        # self.mTw.addWidget()
+        self.rootField.setReadOnly(True)
+        self.precisionField.setReadOnly(True)
 
     def drawFig(self, fig):
         self.canvas = FigureCanvas(fig)
@@ -40,7 +46,6 @@ class Main(QMainWindow, Ui_MainWindow):
         xs = np.arange(-100.0, 100.0, 0.1)
         for function in functions:
             self.plt.plot(xs, function(xs), c=np.random.rand(3, 1))
-        self.plt.axis([-6, 6, -1, 1])
         self.drawFig(self.fig1)
 
     def plotVLines(self, vLines):
@@ -76,12 +81,22 @@ class Main(QMainWindow, Ui_MainWindow):
                 qTable.setItem(row, column,
                                QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]))))
 
+    def drawRoot(self, root):
+        assert type(root) is float or int, "root is not of type float nor int!: " + str(type(root))
+        self.rootField.setText(str(root))
+
+    def drawPrecision(self, precision):
+        assert type(precision) is float or int, "precision is not of type float nor int!: " + str(type(precision))
+        self.precisionField.setText(str(precision))
+
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
         self.plotFunctions(resultSet.getEquations())
         self.plotHLines(resultSet.getHLines())
         self.plotVLines(resultSet.getVLines())
         self.drawTable(resultSet.getTable())
+        self.drawRoot(resultSet.getRoot())
+        self.drawPrecision(resultSet.getPrecision())
 
 
 if __name__ == '__main__':
@@ -90,6 +105,6 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     main = Main()
     main.show()
-    main.drawResultSet(bisection(0.00, 0.11, parseExpr("x^3 - 0.165x^2 + 10^-4")))
+    main.drawResultSet(bisection(0, 0.5, parseExpr("x^3 - 0.165x^2 ")))
 
     sys.exit(app.exec_())
