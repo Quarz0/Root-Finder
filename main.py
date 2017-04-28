@@ -1,7 +1,5 @@
 import numpy as np
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-from PyQt4.uic import loadUiType
+from PyQt4 import QtCore, QtGui, uic
 from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
@@ -13,16 +11,17 @@ from resultset import ResultSet
 from table import Table
 from util import parseExpr
 
-Ui_MainWindow, QMainWindow = loadUiType('window.ui')
+Ui_MainWindow, QtBaseClass = uic.loadUiType('window2.ui')
 
 
 def f(x):
     return np.sin(x)
 
 
-class Main(QMainWindow, Ui_MainWindow):
-    def __init__(self, ):
-        super(Main, self).__init__()
+class Main(QtGui.QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        QtGui.QMainWindow.__init__(self)
+        Ui_MainWindow.__init__(self)
         self.setupUi(self)
         self.fig1 = Figure()
         self.plt = self.fig1.add_subplot(111)
@@ -30,9 +29,46 @@ class Main(QMainWindow, Ui_MainWindow):
         # self.plt.axis([-6, 6, -1, 1])
         self.plt.autoscale(true, tight=false)
         self.resultsTabWidget.clear()
-        # self.mTw.addWidget()
-        self.rootField.setReadOnly(True)
-        self.precisionField.setReadOnly(True)
+
+    def initTableWidget(self):
+        qWidget = QtGui.QWidget()
+        qVbox = QtGui.QVBoxLayout()
+        qTable = QtGui.QTableWidget()
+        qTable.setObjectName("Table")
+        qWidget2 = QtGui.QWidget()
+        hBox = QtGui.QHBoxLayout()
+        hBox.setMargin(0)
+        rootLabel = QtGui.QLabel()
+        rootLabel.setText("Root")
+        rootField = QtGui.QLineEdit()
+        rootField.setObjectName("Root")
+        rootField.setReadOnly(True)
+        hBox.addWidget(rootLabel)
+        hBox.addWidget(rootField)
+        qWidget2.setLayout(hBox)
+        qWidget3 = QtGui.QWidget()
+        hBox2 = QtGui.QHBoxLayout()
+        hBox2.setMargin(0)
+        precisionLabel = QtGui.QLabel()
+        precisionLabel.setText("Precision")
+        precisionField = QtGui.QLineEdit()
+        precisionField.setObjectName("Precision")
+        precisionField.setReadOnly(True)
+        timeLabel = QtGui.QLabel()
+        timeLabel.setText("Time")
+        timeField = QtGui.QLineEdit()
+        timeField.setObjectName("Time")
+        timeField.setReadOnly(True)
+        hBox2.addWidget(precisionLabel)
+        hBox2.addWidget(precisionField)
+        hBox2.addWidget(timeLabel)
+        hBox2.addWidget(timeField)
+        qWidget3.setLayout(hBox2)
+        qVbox.addWidget(qTable)
+        qVbox.addWidget(qWidget2)
+        qVbox.addWidget(qWidget3)
+        qWidget.setLayout(qVbox)
+        return qWidget
 
     def drawFig(self, fig):
         self.canvas = FigureCanvas(fig)
@@ -65,8 +101,9 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def drawTable(self, table):
         assert type(table) is Table, "table is not of type Table!: " + str(type(table))
-        qTable = QtGui.QTableWidget()
-        self.resultsTabWidget.addTab(qTable, QtCore.QString(table.getTitle()))
+        qWidget = self.initTableWidget()
+        self.resultsTabWidget.addTab(qWidget, QtCore.QString(table.getTitle()))
+        qTable = self.resultsTabWidget.findChild(QtGui.QTableWidget, "Table")
         setattr(self, 'Table%d' % self.resultsTabWidget.count(), qTable)
 
         qTable.setColumnCount(len(table.getHeader()))
@@ -82,22 +119,33 @@ class Main(QMainWindow, Ui_MainWindow):
                                QtGui.QTableWidgetItem(str(('%g' % table.getData()[row][column]) if type(
                                    table.getData()[row][column]) is float else table.getData()[row][column])))
 
-    def drawRoot(self, root):
-        assert type(root) is float or int, "root is not of type float nor int!: " + str(type(root))
-        self.rootField.setText(str(root))
+        return qWidget
 
-    def drawPrecision(self, precision):
+    def drawRoot(self, root, rootField):
+        assert type(root) is float or int, "root is not of type float nor int!: " + str(type(root))
+        assert type(rootField) is QtGui.QLineEdit, "rootField is not of type QtGui.QLineEdit!: " + str(type(rootField))
+        rootField.setText(str(root))
+
+    def drawPrecision(self, precision, precisionField):
         assert type(precision) is float or int, "precision is not of type float nor int!: " + str(type(precision))
-        self.precisionField.setText(str(precision))
+        assert type(precisionField) is QtGui.QLineEdit, "precisionField is not of type QtGui.QLineEdit!: " + str(
+            type(precisionField))
+        precisionField.setText(str(precision))
+
+    def drawTime(self, time, timeField):
+        assert type(time) is float or int, "time is not of type float nor int!: " + str(type(time))
+        assert type(timeField) is QtGui.QLineEdit, "timeField is not of type QtGui.QLineEdit!: " + str(type(timeField))
+        timeField.setText(str(('%g' % time)))
 
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
         self.plotFunctions(resultSet.getEquations())
         self.plotHLines(resultSet.getHLines())
         self.plotVLines(resultSet.getVLines())
-        self.drawTable(resultSet.getTable())
-        self.drawRoot(resultSet.getRoot())
-        self.drawPrecision(resultSet.getPrecision())
+        qWidget = self.drawTable(resultSet.getTable())
+        self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
+        self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
+        self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
 
 
 if __name__ == '__main__':
