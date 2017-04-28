@@ -6,6 +6,7 @@ import timeit
 
 def secant(x0, x1, func, iterations=50, eps=0.00001):
     iterationRows = []
+    boundaryChordEqn = getLineEquation((x0, evaluateFunc(func, x0)), (x1, evaluateFunc(func, x1)))
     x_prev = x0
     xi = x1
     startTime = timeit.default_timer()
@@ -26,10 +27,8 @@ def secant(x0, x1, func, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Secant", ['Step', 'xi-1', 'f(xi-1)', 'xi', 'f(xi)', 'xi+1', 'Ea (%)'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea), executionTime, i + 1, [sympy.lambdify('x', expr, 'numpy'),
-                                                                          sympy.lambdify('x', getLineEquation(
-                                                                              (x0, evaluateFunc(func, x0)),
-                                                                              slope=evaluateNthDerivative(func, x0, 1)),
+    return ResultSet(table, xi, calcPrecision(ea), executionTime, i + 1, [sympy.lambdify('x', func, 'numpy'),
+                                                                          sympy.lambdify('x', boundaryChordEqn,
                                                                                          'numpy')])
 
 
