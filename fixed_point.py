@@ -1,7 +1,8 @@
+import timeit
+
 from resultset import ResultSet
 from table import Table
 from util import *
-import timeit
 
 
 def fixed_point(x0, func, iterations=50, eps=0.00001):
@@ -32,7 +33,8 @@ def fixed_point(x0, func, iterations=50, eps=0.00001):
 # Test
 
 # stra = "x^5 - 11x^4+46x^3 - 90 * x^2 + 81x - 27"
-stra = 'e^-x - x'
-expr = parseExpr(stra)
+if __name__ == '__main__':
+    stra = 'e^-x - x'
+    expr = parseExpr(stra)
 
-print fixed_point(-1.5, expr, eps=0.000001, iterations=100)
+    print fixed_point(-1.5, expr, eps=0.000001, iterations=100)

@@ -1,7 +1,8 @@
+import timeit
+
 from resultset import ResultSet
 from table import Table
 from util import *
-import timeit
 
 
 def secant(x0, x1, func, iterations=50, eps=0.00001):
@@ -33,8 +34,8 @@ def secant(x0, x1, func, iterations=50, eps=0.00001):
 
 
 # Test
+if __name__ == '__main__':
+    stra = "e^-x - x"
+    expr = parseExpr(stra)
 
-stra = "e^-x - x"
-expr = parseExpr(stra)
-
-print secant(1, 1.01, expr)
+    print secant(1, 1.01, expr)

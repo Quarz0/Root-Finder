@@ -12,10 +12,14 @@ from table import Table
 from util import parseExpr
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType('window2.ui')
+Ui_MethodsOptions, QtBaseClass2 = uic.loadUiType('methods_options.ui')
 
 
-def f(x):
-    return np.sin(x)
+class MethodsOptionsWindow(QtGui.QMainWindow, Ui_MethodsOptions):
+    def __init__(self, parent=None):
+        super(MethodsOptionsWindow, self).__init__(parent)
+        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setupUi(self)
 
 
 class Main(QtGui.QMainWindow, Ui_MainWindow):
@@ -29,6 +33,11 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         # self.plt.axis([-6, 6, -1, 1])
         self.plt.autoscale(true, tight=false)
         self.resultsTabWidget.clear()
+        self.methodsButton.clicked.connect(self.handleMethodsButton)
+
+    def handleMethodsButton(self):
+        window = MethodsOptionsWindow(self)
+        window.show()
 
     def initTableWidget(self):
         qWidget = QtGui.QWidget()
