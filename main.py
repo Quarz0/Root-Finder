@@ -6,10 +6,8 @@ from matplotlib.backends.backend_qt4agg import (
 from matplotlib.figure import Figure
 from sympy import *
 
-from false_position import false_position
 from resultset import ResultSet
 from table import Table
-from util import parseExpr
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType('window2.ui')
 Ui_MethodsOptions, QtBaseClass2 = uic.loadUiType('methods_options.ui')
@@ -30,6 +28,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.fig1 = Figure()
         self.plt = self.fig1.add_subplot(111)
         self.plt.grid(true)
+        self.drawFig(self.fig1)
         # self.plt.axis([-6, 6, -1, 1])
         self.plt.autoscale(true, tight=false)
         self.resultsTabWidget.clear()
@@ -38,6 +37,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def handleMethodsButton(self):
         window = MethodsOptionsWindow(self)
         window.show()
+        window.move(500, 0)
 
     def initTableWidget(self):
         qWidget = QtGui.QWidget()
@@ -91,7 +91,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         xs = np.arange(-100.0, 100.0, 0.1)
         for function in functions:
             self.plt.plot(xs, function(xs), c=np.random.rand(3, 1))
-        self.drawFig(self.fig1)
 
     def plotVLines(self, vLines):
         assert type(vLines) is list, "vLines is not of type list!: " + str(type(vLines))
@@ -163,6 +162,7 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     main = Main()
     main.show()
-    main.drawResultSet(false_position(-5, 5, parseExpr("x^3 ")))
+    main.showMaximized()
+    # main.drawResultSet(false_position(-5, 5, parseExpr("x^3 ")))
 
     sys.exit(app.exec_())
