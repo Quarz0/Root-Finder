@@ -25,4 +25,22 @@ timeLabel
 rootField
 precisionField
 timeField
+bisectionCheckBox
+falsePositionCheckBox
+newtonRaphsonCheckBox
+fixedPointCheckBox
+secantCheckBox
+birgeVietaCheckBox
+
+bisectionXlField
+bisectionXuField
+falsePositionXlField
+falsePositionXuField
+fixedPointX0Field
+secantX0Field
+secantX1Field
+newtonRaphsonX0Field
+birgeVietaX0Field
+okButton
+cancelButton
 
