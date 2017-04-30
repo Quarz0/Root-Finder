@@ -274,9 +274,6 @@
     <item>
      <widget class="QWidget" name="widget_13" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <property name="topMargin">
-        <number>12</number>
-       </property>
        <property name="bottomMargin">
         <number>0</number>
        </property>
