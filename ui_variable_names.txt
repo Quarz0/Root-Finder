@@ -44,3 +44,6 @@ birgeVietaX0Field
 okButton
 cancelButton
 
+latexLayout
+latexFrame
+splitter
