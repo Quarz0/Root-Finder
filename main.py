@@ -4,13 +4,47 @@ from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
 from matplotlib.figure import Figure
+from matplotlib.pyplot import rcParams
 from sympy import *
 
 from resultset import ResultSet
 from table import Table
 
+rcParams['mathtext.fontset'] = 'stix'
+
 Ui_MainWindow, QtBaseClass = uic.loadUiType('window2.ui')
 Ui_MethodsOptions, QtBaseClass2 = uic.loadUiType('methods_options.ui')
+
+
+class MathTextLabel(QtGui.QWidget):
+    def __init__(self, mathText, parent=None, **kwargs):
+        QtGui.QWidget.__init__(self, parent, **kwargs)
+
+        l = QtGui.QVBoxLayout(self)
+        l.setContentsMargins(0, 0, 0, 0)
+
+        r, g, b, a = self.palette().base().color().getRgbF()
+
+        self._figure = Figure(edgecolor=(r, g, b), facecolor=(r, g, b))
+        self._canvas = FigureCanvas(self._figure)
+        l.addWidget(self._canvas)
+
+        self._figure.clear()
+        text = self._figure.suptitle(
+            mathText,
+            x=0.0,
+            y=1.0,
+            horizontalalignment='left',
+            verticalalignment='top',
+            size=QtGui.QApplication.font().pointSize() * 2)
+        self._canvas.draw()
+
+        (x0, y0), (x1, y1) = text.get_window_extent().get_points()
+        w = x1 - x0
+        h = y1 - y0
+
+        self._figure.set_size_inches(w / 80, h / 80)
+        self.setFixedSize(w, h)
 
 
 class MethodsOptionsWindow(QtGui.QMainWindow, Ui_MethodsOptions):
@@ -33,6 +67,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.plt.autoscale(true, tight=false)
         self.resultsTabWidget.clear()
         self.methodsButton.clicked.connect(self.handleMethodsButton)
+        mathText = r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$'
+        self.latexLayout.addWidget(MathTextLabel(mathText, self), alignment=QtCore.Qt.AlignHCenter)
 
     def handleMethodsButton(self):
         window = MethodsOptionsWindow(self)
