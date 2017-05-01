@@ -45,7 +45,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.loadFileButton.setDisabled(True)
         self.fileRadio.toggled.connect(self.handlePushButtons)
 
-        self.equationField.textEdited.connect(self.drawLatex)
+        self.equationField.textChanged.connect(self.drawLatex)
         self.Dialog = QtGui.QDialog()
         self.dialogUI = Ui_Dialog()
         self.dialogUI.setupUi(self.Dialog)
@@ -56,7 +56,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                            self.dialogUI.fixedPointCheckBox: [self.dialogUI.fixedPointX0Field],
                            self.dialogUI.newtonRaphsonCheckBox: [self.dialogUI.newtonRaphsonX0Field],
                            self.dialogUI.secantCheckBox: [self.dialogUI.secantX0Field, self.dialogUI.secantX1Field],
-                           self.dialogUI.birgeVietaCheckBox: [self.dialogUI.birgeVietaX0Field]}
+                           self.dialogUI.birgeVietaCheckBox: [self.dialogUI.birgeVietaX0Field],
+                           self.dialogUI.generalCheckBox: []}
         self.optionsMapAlias = {}
         self.cloneOptionsMapInfo()
         self.setOptionsHandlers()
@@ -68,8 +69,27 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.latexLayout.setContentsMargins(0, 0, 0, 0)
 
     def setOptionsHandlers(self):
-        for key in self.optionsMap.keys():
+        for (key, val) in self.optionsMap.items():
             key.stateChanged.connect(self.assignReadOnlyHandler)
+            key.stateChanged.connect(self.checkForValidInputs)
+            for va in val:
+                va.textChanged.connect(self.checkForValidInputs)
+
+    def checkForValidInputs(self, text):
+        buttonState = False
+        for (key, vals) in self.optionsMap.items():
+            if key.isChecked():
+                tempState = True
+                for val in vals:
+                    if val.validator().validate(val.text(), 0)[0] != QtGui.QValidator.Acceptable:
+                        tempState = False
+                        break
+                if not tempState:
+                    buttonState = False
+                    break
+                else:
+                    buttonState = True
+        self.dialogUI.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(buttonState)
 
     def assignReadOnlyHandler(self, state):
         checkBox = self.sender()

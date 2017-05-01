@@ -34,6 +34,7 @@ class Ui_Dialog(QtGui.QDialog):
         self.buttonBox.setGeometry(QtCore.QRect(50, 550, 291, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(False)
         self.buttonBox.setObjectName(_fromUtf8("buttonBox"))
         self.widget = QtGui.QWidget(Dialog)
         self.widget.setGeometry(QtCore.QRect(10, 10, 332, 515))
