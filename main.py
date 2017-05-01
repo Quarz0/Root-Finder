@@ -98,16 +98,16 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def cloneOptionsMapInfo(self):
         for (key, val) in self.optionsMap.items():
-            vals = [key.isChecked()]
+            vals = []
             for va in val:
                 vals.append(str(va.text()))
-            self.optionsMapAlias[key] = vals
+            self.optionsMapAlias[key] = (key.isChecked(), vals)
 
     def pasteToOptionsMapInfo(self):
         for (key, val) in self.optionsMapAlias.items():
             key.setChecked(val[0])
-            for i in range(1, len(val)):
-                self.optionsMap[key][i - 1].setText(val[i])
+            for i in range(len(val[1])):
+                self.optionsMap[key][i].setText(val[1][i])
 
     def handlePushButtons(self):
         self.equationField.setReadOnly(True) if not self.textRadio.isChecked() else self.equationField.setReadOnly(
@@ -164,7 +164,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def drawLatex(self, text):
         self._figure.clear()
         text = self._figure.suptitle(
-            toLatex(text),
+            toLatex(text)[1],
             size=QtGui.QApplication.font().pointSize() * 1.8)
         self._canvas.draw()
 

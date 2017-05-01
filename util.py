@@ -48,6 +48,6 @@ def getLineEquation(point1, point2=(), slope=float("nan")):
 
 def toLatex(equation):
     try:
-        return latex(parseExpr(str(equation)), mode='inline')
+        return (True, latex(parseExpr(str(equation)), mode='inline'))
     except SyntaxError, ValueError:
-        return equation
+        return (False, equation)
