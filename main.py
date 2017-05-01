@@ -7,6 +7,7 @@ from matplotlib.figure import Figure
 from matplotlib.pyplot import rcParams
 from sympy import *
 
+from methods import Ui_Dialog
 from resultset import ResultSet
 from table import Table
 from util import toLatex
@@ -14,20 +15,12 @@ from util import toLatex
 rcParams['mathtext.fontset'] = 'stix'
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType('window2.ui')
-Ui_MethodsOptions, QtBaseClass2 = uic.loadUiType('methods_options.ui')
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     def _fromUtf8(s):
         return s
-
-
-class MethodsOptionsWindow(QtGui.QMainWindow, Ui_MethodsOptions):
-    def __init__(self, parent=None):
-        super(MethodsOptionsWindow, self).__init__(parent)
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.setupUi(self)
 
 
 class Main(QtGui.QMainWindow, Ui_MainWindow):
@@ -48,17 +41,39 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         number_group = QtGui.QButtonGroup(self.latexFrame)  # Number group
         number_group.addButton(self.textRadio)
         number_group.addButton(self.fileRadio)
+
         self.loadFileButton.setDisabled(True)
         self.fileRadio.toggled.connect(self.handlePushButtons)
-        self.equationField.textEdited.connect(self.drawLatex)
-        mathText = r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}} \plus X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$'
 
+        self.equationField.textEdited.connect(self.drawLatex)
+        self.Dialog = QtGui.QDialog()
+        self.dialogUI = Ui_Dialog()
+        self.dialogUI.setupUi(self.Dialog)
+        self.optionsMap = {self.dialogUI.bisectionCheckBox: [self.dialogUI.bisectionXlField,
+                                                             self.dialogUI.bisectionXuField],
+                           self.dialogUI.falsePositionCheckBox: [self.dialogUI.falsePositionXlField,
+                                                                 self.dialogUI.falsePositionXuField],
+                           self.dialogUI.fixedPointCheckBox: [self.dialogUI.fixedPointX0Field],
+                           self.dialogUI.newtonRaphsonCheckBox: [self.dialogUI.newtonRaphsonX0Field],
+                           self.dialogUI.secantCheckBox: [self.dialogUI.secantX0Field, self.dialogUI.secantX1Field],
+                           self.dialogUI.birgeVietaCheckBox: [self.dialogUI.birgeVietaX0Field]}
+
+        self.setOptionsHandlers()
         r, g, b, a = self.palette().base().color().getRgbF()
 
         self._figure = Figure(edgecolor=(r, g, b), facecolor=(r, g, b))
         self._canvas = FigureCanvas(self._figure)
         self.latexLayout.addWidget(self._canvas)
         self.latexLayout.setContentsMargins(0, 0, 0, 0)
+
+    def setOptionsHandlers(self):
+        for key in self.optionsMap.keys():
+            key.stateChanged.connect(self.assignReadOnlyHandler)
+
+    def assignReadOnlyHandler(self, state):
+        checkBox = self.sender()
+        for val in self.optionsMap[checkBox]:
+            val.setReadOnly(True) if not checkBox.isChecked() else val.setReadOnly(False)
 
     def handlePushButtons(self):
         self.equationField.setReadOnly(True) if not self.textRadio.isChecked() else self.equationField.setReadOnly(
@@ -67,9 +82,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             False)
 
     def handleMethodsButton(self):
-        window = MethodsOptionsWindow(self)
-        window.show()
-        window.move(500, 0)
+        self.Dialog.exec_()
 
     def initTableWidget(self):
         qWidget = QtGui.QWidget()
