@@ -9,6 +9,7 @@ from sympy import *
 
 from resultset import ResultSet
 from table import Table
+from util import toLatex
 
 rcParams['mathtext.fontset'] = 'stix'
 
@@ -49,6 +50,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         number_group.addButton(self.fileRadio)
         self.loadFileButton.setDisabled(True)
         self.fileRadio.toggled.connect(self.handlePushButtons)
+        self.equationField.textEdited.connect(self.drawLatex)
         mathText = r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}} \plus X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$'
 
         r, g, b, a = self.palette().base().color().getRgbF()
@@ -57,16 +59,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self._canvas = FigureCanvas(self._figure)
         self.latexLayout.addWidget(self._canvas)
         self.latexLayout.setContentsMargins(0, 0, 0, 0)
-
-        self._figure.clear()
-        text = self._figure.suptitle(
-            mathText,
-            size=QtGui.QApplication.font().pointSize() * 1.8)
-        self._canvas.draw()
-        (x0, y0), (x1, y1) = text.get_window_extent().get_points()
-        w = x1 - x0
-        h = y1 - y0
-        self._figure.set_size_inches(w / 80, h / 80)
 
     def handlePushButtons(self):
         self.equationField.setReadOnly(True) if not self.textRadio.isChecked() else self.equationField.setReadOnly(
@@ -118,6 +110,13 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         qVbox.addWidget(qWidget3)
         qWidget.setLayout(qVbox)
         return qWidget
+
+    def drawLatex(self, text):
+        self._figure.clear()
+        text = self._figure.suptitle(
+            toLatex(text),
+            size=QtGui.QApplication.font().pointSize() * 1.8)
+        self._canvas.draw()
 
     def drawFig(self, fig):
         self.canvas = FigureCanvas(fig)
