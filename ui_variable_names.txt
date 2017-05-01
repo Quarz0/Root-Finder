@@ -41,8 +41,7 @@ secantX0Field
 secantX1Field
 newtonRaphsonX0Field
 birgeVietaX0Field
-okButton
-cancelButton
+generalCheckBox
 
 latexLayout
 latexFrame
