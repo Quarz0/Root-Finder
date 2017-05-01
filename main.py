@@ -57,7 +57,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                            self.dialogUI.newtonRaphsonCheckBox: [self.dialogUI.newtonRaphsonX0Field],
                            self.dialogUI.secantCheckBox: [self.dialogUI.secantX0Field, self.dialogUI.secantX1Field],
                            self.dialogUI.birgeVietaCheckBox: [self.dialogUI.birgeVietaX0Field]}
-
+        self.optionsMapAlias = {}
+        self.cloneOptionsMapInfo()
         self.setOptionsHandlers()
         r, g, b, a = self.palette().base().color().getRgbF()
 
@@ -75,6 +76,19 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         for val in self.optionsMap[checkBox]:
             val.setReadOnly(True) if not checkBox.isChecked() else val.setReadOnly(False)
 
+    def cloneOptionsMapInfo(self):
+        for (key, val) in self.optionsMap.items():
+            vals = [key.isChecked()]
+            for va in val:
+                vals.append(str(va.text()))
+            self.optionsMapAlias[key] = vals
+
+    def pasteToOptionsMapInfo(self):
+        for (key, val) in self.optionsMapAlias.items():
+            key.setChecked(val[0])
+            for i in range(1, len(val)):
+                self.optionsMap[key][i - 1].setText(val[i])
+
     def handlePushButtons(self):
         self.equationField.setReadOnly(True) if not self.textRadio.isChecked() else self.equationField.setReadOnly(
             False)
@@ -82,7 +96,10 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             False)
 
     def handleMethodsButton(self):
-        self.Dialog.exec_()
+        if self.Dialog.exec_():
+            self.cloneOptionsMapInfo()
+        else:
+            self.pasteToOptionsMapInfo()
 
     def initTableWidget(self):
         qWidget = QtGui.QWidget()
