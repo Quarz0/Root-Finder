@@ -67,8 +67,21 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.plt.autoscale(true, tight=false)
         self.resultsTabWidget.clear()
         self.methodsButton.clicked.connect(self.handleMethodsButton)
+        self.textRadio.toggled.connect(self.handlePushButtons)
+        self.textRadio.toggle()
+        number_group = QtGui.QButtonGroup(self.latexFrame)  # Number group
+        number_group.addButton(self.textRadio)
+        number_group.addButton(self.fileRadio)
+        self.loadFileButton.setDisabled(True)
+        self.fileRadio.toggled.connect(self.handlePushButtons)
         mathText = r'$X_k = \sum_{n=0}^{N-1} x_n . e^{\frac{-i2\pi kn}{N}}$'
         self.latexLayout.addWidget(MathTextLabel(mathText, self), alignment=QtCore.Qt.AlignHCenter)
+
+    def handlePushButtons(self):
+        self.equationField.setReadOnly(True) if not self.textRadio.isChecked() else self.equationField.setReadOnly(
+            False)
+        self.loadFileButton.setDisabled(True) if not self.fileRadio.isChecked() else self.loadFileButton.setDisabled(
+            False)
 
     def handleMethodsButton(self):
         window = MethodsOptionsWindow(self)
