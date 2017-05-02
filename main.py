@@ -42,6 +42,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.plt.grid(true)
         self.drawFig(self.fig1)
         # self.plt.axis([-6, 6, -1, 1])
+        # self.equationField.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("\w"), self))
         self.plt.autoscale(true, tight=false)
         self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquation)
@@ -54,6 +55,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         number_group.addButton(self.fileRadio)
 
         self.loadFileButton.setDisabled(True)
+        self.loadFileButton.clicked.connect(self.openLoadFileDialog)
         self.fileRadio.toggled.connect(self.handlePushButtons)
 
         self.equationField.textChanged.connect(self.drawLatex)
@@ -98,6 +100,11 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                 chosenMethod = True
                 break
         self.solveButton.setEnabled(self.isValidEquation and chosenMethod)
+
+    @QtCore.pyqtSlot()
+    def openLoadFileDialog(self):
+        print QtGui.QFileDialog.getOpenFileName(self, 'Open equation',
+                                                '', "All (*.*)")
 
     def setOptionsHandlers(self):
         for (key, val) in self.methodsCheckMap.items():

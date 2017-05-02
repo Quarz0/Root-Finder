@@ -49,5 +49,5 @@ def getLineEquation(point1, point2=(), slope=float("nan")):
 def toLatex(equation):
     try:
         return (True, latex(parseExpr(str(equation)), mode='inline'))
-    except SyntaxError, ValueError:
+    except (SyntaxError, ValueError, UnicodeEncodeError, sympy.parsing.sympy_tokenize.TokenError) as e:
         return (False, equation)
