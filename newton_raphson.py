@@ -5,7 +5,7 @@ from table import Table
 from util import *
 
 
-def newton_raphson(x0, func, iterations=50, eps=0.00001):
+def newton_raphson(func, x0, iterations=50, eps=0.00001):
     iterationRows = []
     xi = x0
     startTime = timeit.default_timer()

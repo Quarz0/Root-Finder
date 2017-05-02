@@ -1,3 +1,4 @@
+import importlib
 import numpy as np
 from PyQt4 import QtCore, QtGui, uic
 from matplotlib.backends.backend_qt4agg import (
@@ -10,7 +11,7 @@ from sympy import *
 from methods import Ui_Dialog
 from resultset import ResultSet
 from table import Table
-from util import toLatex
+from util import parseExpr, toLatex
 
 rcParams['mathtext.fontset'] = 'stix'
 
@@ -27,11 +28,11 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     solveButtonTrigger = QtCore.pyqtSignal()
     fig1 = Figure()
     Dialog = None
-    optionsMap = None
+    methodsCheckMap = None
     dialogUI = None
     _canvas = None
-    validEquation = False
-    optionsMapAlias = {}
+    isValidEquation = False
+    methodsCheckMapAlias = {}
 
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
@@ -43,6 +44,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         # self.plt.axis([-6, 6, -1, 1])
         self.plt.autoscale(true, tight=false)
         self.solveButton.setEnabled(False)
+        self.solveButton.clicked.connect(self.solveEquation)
         self.resultsTabWidget.clear()
         self.methodsButton.clicked.connect(self.handleMethodsButton)
         self.textRadio.toggled.connect(self.handlePushButtons)
@@ -58,15 +60,16 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.Dialog = QtGui.QDialog()
         self.dialogUI = Ui_Dialog()
         self.dialogUI.setupUi(self.Dialog)
-        self.optionsMap = {self.dialogUI.bisectionCheckBox: [self.dialogUI.bisectionXlField,
-                                                             self.dialogUI.bisectionXuField],
-                           self.dialogUI.falsePositionCheckBox: [self.dialogUI.falsePositionXlField,
-                                                                 self.dialogUI.falsePositionXuField],
-                           self.dialogUI.fixedPointCheckBox: [self.dialogUI.fixedPointX0Field],
-                           self.dialogUI.newtonRaphsonCheckBox: [self.dialogUI.newtonRaphsonX0Field],
-                           self.dialogUI.secantCheckBox: [self.dialogUI.secantX0Field, self.dialogUI.secantX1Field],
-                           self.dialogUI.birgeVietaCheckBox: [self.dialogUI.birgeVietaX0Field],
-                           self.dialogUI.generalCheckBox: []}
+        self.methodsCheckMap = {self.dialogUI.bisectionCheckBox: [self.dialogUI.bisectionXlField,
+                                                                  self.dialogUI.bisectionXuField],
+                                self.dialogUI.falsePositionCheckBox: [self.dialogUI.falsePositionXlField,
+                                                                      self.dialogUI.falsePositionXuField],
+                                self.dialogUI.fixedPointCheckBox: [self.dialogUI.fixedPointX0Field],
+                                self.dialogUI.newtonRaphsonCheckBox: [self.dialogUI.newtonRaphsonX0Field],
+                                self.dialogUI.secantCheckBox: [self.dialogUI.secantX0Field,
+                                                               self.dialogUI.secantX1Field],
+                                self.dialogUI.birgeVietaCheckBox: [self.dialogUI.birgeVietaX0Field],
+                                self.dialogUI.generalCheckBox: []}
         self.solveButtonTrigger.connect(self.handleSolveButton)
         self.cloneOptionsMapInfo()
         self.setOptionsHandlers()
@@ -78,16 +81,26 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.latexLayout.setContentsMargins(0, 0, 0, 0)
 
     @QtCore.pyqtSlot()
+    def solveEquation(self):
+        # self.plt.clear()
+        equ = parseExpr(str(self.equationField.text()))
+        for (key, val) in self.methodsCheckMapAlias.items():
+            if val[0]:
+                method = str(key.objectName())
+                self.drawResultSet(getattr(importlib.import_module(method), method)(equ, *[float(i) for i in val[1]]))
+        self.canvas.draw()
+
+    @QtCore.pyqtSlot()
     def handleSolveButton(self):
         chosenMethod = False
-        for (state, val) in self.optionsMapAlias.values():
+        for (state, val) in self.methodsCheckMapAlias.values():
             if state:
                 chosenMethod = True
                 break
-        self.solveButton.setEnabled(self.validEquation and chosenMethod)
+        self.solveButton.setEnabled(self.isValidEquation and chosenMethod)
 
     def setOptionsHandlers(self):
-        for (key, val) in self.optionsMap.items():
+        for (key, val) in self.methodsCheckMap.items():
             key.stateChanged.connect(self.assignReadOnlyHandler)
             key.stateChanged.connect(self.checkForValidInputs)
             for va in val:
@@ -95,7 +108,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def checkForValidInputs(self, text):
         buttonState = False
-        for (key, vals) in self.optionsMap.items():
+        for (key, vals) in self.methodsCheckMap.items():
             if key.isChecked():
                 tempState = True
                 for val in vals:
@@ -111,21 +124,21 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def assignReadOnlyHandler(self, state):
         checkBox = self.sender()
-        for val in self.optionsMap[checkBox]:
+        for val in self.methodsCheckMap[checkBox]:
             val.setReadOnly(True) if not checkBox.isChecked() else val.setReadOnly(False)
 
     def cloneOptionsMapInfo(self):
-        for (key, val) in self.optionsMap.items():
+        for (key, val) in self.methodsCheckMap.items():
             vals = []
             for va in val:
                 vals.append(str(va.text()))
-            self.optionsMapAlias[key] = (key.isChecked(), vals)
+            self.methodsCheckMapAlias[key] = (key.isChecked(), vals)
 
     def pasteToOptionsMapInfo(self):
-        for (key, val) in self.optionsMapAlias.items():
+        for (key, val) in self.methodsCheckMapAlias.items():
             key.setChecked(val[0])
             for i in range(len(val[1])):
-                self.optionsMap[key][i].setText(val[1][i])
+                self.methodsCheckMap[key][i].setText(val[1][i])
 
     def handlePushButtons(self):
         self.equationField.setReadOnly(True) if not self.textRadio.isChecked() else self.equationField.setReadOnly(
@@ -182,7 +195,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def drawLatex(self, text):
         self._figure.clear()
-        self.validEquation, latexText = toLatex(text)
+        self.isValidEquation, latexText = toLatex(text)
         text = self._figure.suptitle(
             latexText,
             size=QtGui.QApplication.font(self).pointSize() * 1.8)
@@ -192,7 +205,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def drawFig(self, fig):
         self.canvas = FigureCanvas(fig)
         self.mplvl.addWidget(self.canvas)
-        self.canvas.draw()
         self.toolbar = NavigationToolbar(self.canvas,
                                          self.mplwindow, coordinates=True)
         self.mplvl.addWidget(self.toolbar)
@@ -213,9 +225,9 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             self.plt.axhlne(y=line, c=np.random.rand(3, 1))
 
     def plotPoints(self, xs, ys):
-        plt = self.fig1.add_subplot(111)
+        # plt = self.fig1.add_subplot(111)
         for i in range(len(xs)):
-            plt.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
+            self.plt.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
 
     def drawTable(self, table):
         assert type(table) is Table, "table is not of type Table!: " + str(type(table))
@@ -273,6 +285,9 @@ if __name__ == '__main__':
     main = Main()
     main.show()
     main.showMaximized()
+    sta = 'bisection'
+    # print getattr(importlib.import_module(sta), sta)(1, 0, parseExpr('x^3'))
+    # print func(sta)
     # main.drawResultSet(false_position(-5, 5, parseExpr("x^3 ")))
 
     sys.exit(app.exec_())

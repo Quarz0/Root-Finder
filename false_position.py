@@ -5,7 +5,7 @@ from table import Table
 from util import *
 
 
-def false_position(xl, xu, func, iterations=50, eps=0.00001):
+def false_position(func, xl, xu, iterations=50, eps=0.00001):
     if evaluateFunc(func, xl) * evaluateFunc(func, xu) > 0:
         return float('nan')
 

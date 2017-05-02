@@ -5,7 +5,7 @@ from table import Table
 from util import *
 
 
-def bisection(xl, xu, func, iterations=50, eps=0.00001):
+def bisection(func, xl, xu, iterations=50, eps=0.00001):
     if evaluateFunc(func, xl) * evaluateFunc(func, xu) > 0:
         return float('nan')
 
@@ -32,7 +32,7 @@ def bisection(xl, xu, func, iterations=50, eps=0.00001):
 
         if evaluateFunc(func, xl) * evaluateFunc(func, xr) == 0:
             ea = 0
-            break;
+            break
         if i > 0 and ea < eps: break
 
     executionTime = timeit.default_timer() - startTime

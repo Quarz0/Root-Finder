@@ -5,7 +5,7 @@ from table import Table
 from util import *
 
 
-def secant(x0, x1, func, iterations=50, eps=0.00001):
+def secant(func, x0, x1, iterations=50, eps=0.00001):
     iterationRows = []
     boundaryChordEqn = getLineEquation((x0, evaluateFunc(func, x0)), (x1, evaluateFunc(func, x1)))
     x_prev = x0

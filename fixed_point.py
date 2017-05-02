@@ -5,7 +5,7 @@ from table import Table
 from util import *
 
 
-def fixed_point(x0, func, iterations=50, eps=0.00001):
+def fixed_point(func, x0, iterations=50, eps=0.00001):
     iterationRows = []
     boundaryLineEqn = getLineEquation((0, 0), slope=1)
     xi = x0
