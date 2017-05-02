@@ -24,16 +24,25 @@ except AttributeError:
 
 
 class Main(QtGui.QMainWindow, Ui_MainWindow):
+    solveButtonTrigger = QtCore.pyqtSignal()
+    fig1 = Figure()
+    Dialog = None
+    optionsMap = None
+    dialogUI = None
+    _canvas = None
+    validEquation = False
+    optionsMapAlias = {}
+
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
-        self.fig1 = Figure()
         self.plt = self.fig1.add_subplot(111)
         self.plt.grid(true)
         self.drawFig(self.fig1)
         # self.plt.axis([-6, 6, -1, 1])
         self.plt.autoscale(true, tight=false)
+        self.solveButton.setEnabled(False)
         self.resultsTabWidget.clear()
         self.methodsButton.clicked.connect(self.handleMethodsButton)
         self.textRadio.toggled.connect(self.handlePushButtons)
@@ -58,7 +67,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                            self.dialogUI.secantCheckBox: [self.dialogUI.secantX0Field, self.dialogUI.secantX1Field],
                            self.dialogUI.birgeVietaCheckBox: [self.dialogUI.birgeVietaX0Field],
                            self.dialogUI.generalCheckBox: []}
-        self.optionsMapAlias = {}
+        self.solveButtonTrigger.connect(self.handleSolveButton)
         self.cloneOptionsMapInfo()
         self.setOptionsHandlers()
         r, g, b, a = self.palette().base().color().getRgbF()
@@ -67,6 +76,15 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self._canvas = FigureCanvas(self._figure)
         self.latexLayout.addWidget(self._canvas)
         self.latexLayout.setContentsMargins(0, 0, 0, 0)
+
+    @QtCore.pyqtSlot()
+    def handleSolveButton(self):
+        chosenMethod = False
+        for (state, val) in self.optionsMapAlias.values():
+            if state:
+                chosenMethod = True
+                break
+        self.solveButton.setEnabled(self.validEquation and chosenMethod)
 
     def setOptionsHandlers(self):
         for (key, val) in self.optionsMap.items():
@@ -118,6 +136,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def handleMethodsButton(self):
         if self.Dialog.exec_():
             self.cloneOptionsMapInfo()
+            self.solveButtonTrigger.emit()
         else:
             self.pasteToOptionsMapInfo()
 
@@ -163,10 +182,12 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def drawLatex(self, text):
         self._figure.clear()
+        self.validEquation, latexText = toLatex(text)
         text = self._figure.suptitle(
-            toLatex(text)[1],
-            size=QtGui.QApplication.font().pointSize() * 1.8)
+            latexText,
+            size=QtGui.QApplication.font(self).pointSize() * 1.8)
         self._canvas.draw()
+        self.solveButtonTrigger.emit()
 
     def drawFig(self, fig):
         self.canvas = FigureCanvas(fig)
