@@ -20,7 +20,8 @@ def bisection(func, xl, xu, iterations=50, eps=0.00001):
         xr = (xu + xl) / 2
 
         if xr_old != None:
-            ea = abs(xr - xr_old) / abs(xr)
+            ea = abs(xr - xr_old)
+            ea_rel = abs(xr - xr_old) / max(abs(xr_old), abs(xr))
         else:
             ea = "-"
 
@@ -33,14 +34,14 @@ def bisection(func, xl, xu, iterations=50, eps=0.00001):
             xl = xr
 
         if evaluateFunc(func, xl) * evaluateFunc(func, xr) == 0:
-            ea = 0
+            ea_rel = 0
             break
         if i > 0 and ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
-    table = Table("Bisection", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Ea (%)'], iterationRows)
+    table = Table("Bisection", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xr, calcPrecision(ea), executionTime, i, [equation(sympy.lambdify('x', func, 'numpy'))],
+    return ResultSet(table, xr, calcPrecision(ea_rel), executionTime, i, equation(sympy.lambdify('x', func, 'numpy')),
                      boundaries=boundaryLines)
 
 

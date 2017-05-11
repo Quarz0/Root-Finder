@@ -15,7 +15,8 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
     for i in xrange(iterations):
 
         xi_1 = evaluateFunc(func, xi)
-        ea = abs(xi - xi_1) / abs(xi_1)
+        ea = abs(xi - xi_1)
+        ea_rel = abs(xi - xi_1) / max(abs(xi), abs(xi_1))
 
         iterationRows.append([i + 1, xi, xi_1, ea])
 
@@ -24,9 +25,9 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
         if evaluateFunc(func, xi) == 0 or ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
-    table = Table("Fixed-Point", ['Step', 'xi', 'xi+1', 'Ea (%)'], iterationRows)
+    table = Table("Fixed-Point", ['Step', 'xi', 'xi+1', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea), executionTime, i + 1,
+    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
                      [sympy.lambdify('x', func, 'numpy'), sympy.lambdify('x', boundaryLineEqn, 'numpy')])
 
 
