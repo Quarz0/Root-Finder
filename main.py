@@ -91,6 +91,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot()
     def solveEquation(self):
         # self.plt.clear()
+        self.clearAll()
         equ = parseExpr(str(self.equationField.text()))
         for (key, val) in self.methodsCheckMapAlias.items():
             if val[0]:
@@ -113,6 +114,25 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def openLoadFileDialog(self):
         print QtGui.QFileDialog.getOpenFileName(self, 'Open equation',
                                                 '', "All (*.*)")
+
+    def clearAll(self):
+        count = self.resultsTabWidget.count()
+        for i in xrange(count):
+            self.resultsTabWidget.widget(i).deleteLater()
+        self.tempResultSets[:] = []
+        self.tempBoundaries[:] = []
+        self.clearPlots()
+
+    def clearPlots(self):
+        self.plt1.cla()
+        self.plt1.grid(true)
+        self.plt1.autoscale(true, tight=false)
+        self.plt2.cla()
+        self.plt2.grid(true)
+        self.plt2.autoscale(true, tight=false)
+        self.plt3.cla()
+        self.plt3.grid(true)
+        self.plt3.autoscale(true, tight=false)
 
     def setOptionsHandlers(self):
         for (key, val) in self.methodsCheckMap.items():
@@ -259,17 +279,21 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         for i in xrange(len(xs)):
             self.plt1.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
 
-    def plotError(self, iterationsCount, tableData):
+    def plotError(self, errors):
         err = []
-        for row in tableData:
-            err.append(row[len(row) - 1])
-        self.plt2.plot(range(1, iterationsCount + 1), err, c=np.random.rand(3, 1))
+        its = []
+        for i in xrange(1, len(errors)):
+            err.append(errors[i][1])
+            its.append(errors[i][0])
+        self.plt2.plot(its, err, c=np.random.rand(3, 1))
 
-    def plotRoot(self, iterationsCount, tableData):
+    def plotRoot(self, roots):
         root = []
-        for row in tableData:
-            root.append(row[1])
-        self.plt3.plot(range(1, iterationsCount + 1), root, c=np.random.rand(3, 1))
+        its = []
+        for (i, r) in roots:
+            root.append(r)
+            its.append(i)
+        self.plt3.plot(its, root, c=np.random.rand(3, 1))
 
     def drawTable(self, table):
         assert type(table) is Table, "table is not of type Table!: " + str(type(table))
@@ -284,7 +308,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         qTable.setSelectionBehavior(QtGui.QTableWidget.SelectRows)
         qTable.setSelectionMode(QtGui.QTableWidget.SingleSelection)
         qTable.itemSelectionChanged.connect(self.plotTempBoundaries)
-
         qTable.setRowCount(len(table.getData()))
         for row in xrange(len(table.getData())):
             for column in xrange(len(table.getHeader())):
@@ -324,14 +347,12 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
         self.plotFunction(resultSet.getEquation())
-        # self.plotHLines(resultSet.getHLines())
-        # self.plotVLines(resultSet.getVLines())
         qWidget = self.drawTable(resultSet.getTable())
         self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
         self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
-        # self.plotError(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
-        # self.plotRoot(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
+        self.plotError(resultSet.getErrors())
+        self.plotRoot(resultSet.getRoots())
 
 
 if __name__ == '__main__':

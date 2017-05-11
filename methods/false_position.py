@@ -1,4 +1,5 @@
 import timeit
+
 from equation import equation
 from resultset import ResultSet
 from table import Table

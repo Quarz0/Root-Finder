@@ -1,5 +1,6 @@
 class ResultSet(object):
-    def __init__(self, table=None, root=None, precision=None, time=None, iters=None, equation=None, errors=[], roots=[], boundaries=[]):
+    def __init__(self, table=None, root=None, precision=None, time=None, iters=None, equation=None, errors=[], roots=[],
+                 boundaries=[]):
         self.table = table
         self.root = root
         self.precision = precision
