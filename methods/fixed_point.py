@@ -1,5 +1,5 @@
 import timeit
-
+from equation import equation
 from resultset import ResultSet
 from table import Table
 from util import *
@@ -7,12 +7,15 @@ from util import *
 
 def fixed_point(func, x0, iterations=50, eps=0.00001):
     iterationRows = []
-    boundaryLineEqn = getLineEquation((0, 0), slope=1)
+    boundaries = []
     xi = x0
     func = addToFunc(func, 'x')
     startTime = timeit.default_timer()
 
     for i in xrange(iterations):
+        boundaries.append([equation(sympy.lambdify('x', getLineEquation((0, 0), slope=1), 'numpy')), equation(xi, True),
+                           equation(
+                               sympy.lambdify('x', getLineEquation((0, evaluateFunc(func, xi)), slope=0), 'numpy'))])
 
         xi_1 = evaluateFunc(func, xi)
         ea = abs(xi - xi_1)
@@ -27,8 +30,8 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Fixed-Point", ['Step', 'xi', 'xi+1', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
-                     [sympy.lambdify('x', func, 'numpy'), sympy.lambdify('x', boundaryLineEqn, 'numpy')])
+    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, sympy.lambdify('x', func, 'numpy'),
+                     boundaries=boundaries)
 
 
 # Test

@@ -1,5 +1,5 @@
 import timeit
-
+from equation import equation
 from resultset import ResultSet
 from table import Table
 from util import *
@@ -8,9 +8,13 @@ from util import *
 def newton_raphson(func, x0, iterations=50, eps=0.00001):
     iterationRows = []
     xi = x0
+    boundaries = []
     startTime = timeit.default_timer()
 
     for i in xrange(iterations):
+        boundaries.append([equation(
+            sympy.lambdify('x', getLineEquation((xi, evaluateFunc(func, xi)), slope=evaluateNthDerivative(func, xi, 1)),
+                           'numpy'))])
 
         xi_1 = xi - evaluateFunc(func, xi) / evaluateNthDerivative(func, xi, 1)
         ea = abs(xi - xi_1)
@@ -26,12 +30,8 @@ def newton_raphson(func, x0, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Newton-Raphson", ['Step', 'xi', 'f(xi)', "f'(xi)", 'xi+1', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, [sympy.lambdify('x', func, 'numpy'),
-                                                                              sympy.lambdify('x', getLineEquation(
-                                                                                  (x0, evaluateFunc(func, x0)),
-                                                                                  slope=evaluateNthDerivative(func, x0,
-                                                                                                              1)),
-                                                                                             'numpy')])
+    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, sympy.lambdify('x', func, 'numpy'),
+                     boundaries=boundaries)
 
 
 # Test
