@@ -32,7 +32,7 @@ class ResultSet(object):
         return self.time
 
     def getNumberOfIterations(self):
-        return self.NumIters
+        return self.numIters
 
     def __str__(self):
         string = "Equation: " + str(self.equations[0]) + "\n"

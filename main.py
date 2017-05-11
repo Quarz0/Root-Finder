@@ -1,6 +1,7 @@
 import importlib
 import numpy as np
 from PyQt4 import QtCore, QtGui, uic
+from matplotlib.backends.backend_ps import FigureCanvas
 from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
     NavigationToolbar2QT as NavigationToolbar)
@@ -26,7 +27,7 @@ except AttributeError:
 
 class Main(QtGui.QMainWindow, Ui_MainWindow):
     solveButtonTrigger = QtCore.pyqtSignal()
-    fig1 = Figure()
+    plt1 = plt2 = plt3 = None
     Dialog = None
     methodsCheckMap = None
     dialogUI = None
@@ -38,12 +39,15 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
-        self.plt = self.fig1.add_subplot(111)
-        self.plt.grid(true)
-        self.drawFig(self.fig1)
+        self.figs = [(Figure(), [self.plt1, self.mplvl1, self.mplwindow1]),
+                     (Figure(), [self.plt2, self.mplvl2, self.mplwindow2]),
+                     (Figure(), [self.plt3, self.mplvl3, self.mplwindow3])]
+
+        self.drawFigs()
+
         # self.plt.axis([-6, 6, -1, 1])
         # self.equationField.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("\w"), self))
-        self.plt.autoscale(true, tight=false)
+
         self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquation)
         self.resultsTabWidget.clear()
@@ -90,7 +94,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             if val[0]:
                 method = str(key.objectName())
                 self.drawResultSet(getattr(importlib.import_module(method), method)(equ, *[float(i) for i in val[1]]))
-        self.canvas.draw()
+        # self.canvas.draw()
+        self.plotAll()
 
     @QtCore.pyqtSlot()
     def handleSolveButton(self):
@@ -209,32 +214,59 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self._canvas.draw()
         self.solveButtonTrigger.emit()
 
-    def drawFig(self, fig):
-        self.canvas = FigureCanvas(fig)
-        self.mplvl.addWidget(self.canvas)
-        self.toolbar = NavigationToolbar(self.canvas,
-                                         self.mplwindow, coordinates=True)
-        self.mplvl.addWidget(self.toolbar)
+    def drawFigs(self):
+        i = 0
+        for (fig, ls) in self.figs:
+            ls[0] = fig.add_subplot(111)
+            ls[0].grid(true)
+            canvas = FigureCanvas(fig)
+            canvas.setObjectName("canvas" + str(i))
+            ls[1].addWidget(canvas)
+            toolbar = NavigationToolbar(canvas,
+                                        ls[2], coordinates=True)
+            ls[1].addWidget(toolbar)
+            ls[0].autoscale(true, tight=false)
+            i += 1
+
+        self.plt1 = self.figs[0][1][0]
+        self.plt2 = self.figs[1][1][0]
+        self.plt3 = self.figs[2][1][0]
+
+    def plotAll(self):
+        for i in xrange(3):
+            self.graphTabWidget.findChild(FigureCanvas, 'canvas' + str(i)).draw()
 
     def plotFunctions(self, functions):
         xs = np.arange(-100.0, 100.0, 0.1)
         for function in functions:
-            self.plt.plot(xs, function(xs), c=np.random.rand(3, 1))
+            self.plt1.plot(xs, function(xs), c=np.random.rand(3, 1))
 
     def plotVLines(self, vLines):
         assert type(vLines) is list, "vLines is not of type list!: " + str(type(vLines))
         for line in vLines:
-            self.plt.axvline(x=line, c=np.random.rand(3, 1))
+            self.plt1.axvline(x=line, c=np.random.rand(3, 1))
 
     def plotHLines(self, hLines):
         assert type(hLines) is list, "hLines is not of type list!: " + str(type(hLines))
         for line in hLines:
-            self.plt.axhlne(y=line, c=np.random.rand(3, 1))
+            self.plt1.axhlne(y=line, c=np.random.rand(3, 1))
 
     def plotPoints(self, xs, ys):
         # plt = self.fig1.add_subplot(111)
-        for i in range(len(xs)):
-            self.plt.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
+        for i in xrange(len(xs)):
+            self.plt1.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
+
+    def plotError(self, iterationsCount, tableData):
+        err = []
+        for row in tableData:
+            err.append(row[len(row) - 1])
+        self.plt2.plot(range(1, iterationsCount + 1), err, c=np.random.rand(3, 1))
+
+    def plotRoot(self, iterationsCount, tableData):
+        root = []
+        for row in tableData:
+            root.append(row[1])
+        self.plt3.plot(range(1, iterationsCount + 1), root, c=np.random.rand(3, 1))
 
     def drawTable(self, table):
         assert type(table) is Table, "table is not of type Table!: " + str(type(table))
@@ -283,6 +315,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
         self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
+        self.plotError(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
+        self.plotRoot(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
 
 
 if __name__ == '__main__':

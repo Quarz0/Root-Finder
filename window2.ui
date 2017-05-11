@@ -31,15 +31,15 @@
                                     </property>
                                     <widget class="QTabWidget" name="graphTabWidget">
                                         <property name="currentIndex">
-                                            <number>1</number>
+                                            <number>0</number>
                                         </property>
                                         <widget class="QWidget" name="graph1Tab">
                                             <attribute name="title">
-                                                <string>Tab 1</string>
+                                                <string>Method</string>
                                             </attribute>
                                             <layout class="QVBoxLayout" name="verticalLayout_2">
                                                 <item>
-                                                    <widget class="QWidget" name="mplwindow" native="true">
+                                                    <widget class="QWidget" name="mplwindow1" native="true">
                                                         <property name="sizePolicy">
                                                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                                                 <horstretch>0</horstretch>
@@ -52,15 +52,58 @@
                                                         <property name="autoFillBackground">
                                                             <bool>false</bool>
                                                         </property>
-                                                        <layout class="QVBoxLayout" name="mplvl"/>
+                                                        <layout class="QVBoxLayout" name="mplvl1"/>
                                                     </widget>
                                                 </item>
                                             </layout>
                                         </widget>
                                         <widget class="QWidget" name="graph2Tab">
                                             <attribute name="title">
-                                                <string>Tab 2</string>
+                                                <string>Error</string>
                                             </attribute>
+                                            <layout class="QVBoxLayout" name="verticalLayout_2">
+                                                <item>
+                                                    <widget class="QWidget" name="mplwindow2" native="true">
+                                                        <property name="sizePolicy">
+                                                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                                                <horstretch>0</horstretch>
+                                                                <verstretch>0</verstretch>
+                                                            </sizepolicy>
+                                                        </property>
+                                                        <property name="layoutDirection">
+                                                            <enum>Qt::LeftToRight</enum>
+                                                        </property>
+                                                        <property name="autoFillBackground">
+                                                            <bool>false</bool>
+                                                        </property>
+                                                        <layout class="QVBoxLayout" name="mplvl2"/>
+                                                    </widget>
+                                                </item>
+                                            </layout>
+                                        </widget>
+                                        <widget class="QWidget" name="graph3Tab">
+                                            <attribute name="title">
+                                                <string>Root</string>
+                                            </attribute>
+                                            <layout class="QVBoxLayout" name="verticalLayout_2">
+                                                <item>
+                                                    <widget class="QWidget" name="mplwindow3" native="true">
+                                                        <property name="sizePolicy">
+                                                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                                                <horstretch>0</horstretch>
+                                                                <verstretch>0</verstretch>
+                                                            </sizepolicy>
+                                                        </property>
+                                                        <property name="layoutDirection">
+                                                            <enum>Qt::LeftToRight</enum>
+                                                        </property>
+                                                        <property name="autoFillBackground">
+                                                            <bool>false</bool>
+                                                        </property>
+                                                        <layout class="QVBoxLayout" name="mplvl3"/>
+                                                    </widget>
+                                                </item>
+                                            </layout>
                                         </widget>
                                     </widget>
                                     <widget class="QWidget" name="widget" native="true">
