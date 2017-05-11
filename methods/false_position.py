@@ -20,7 +20,8 @@ def false_position(func, xl, xu, iterations=50, eps=0.00001):
             evaluateFunc(func, xu) - evaluateFunc(func, xl))
 
         if xr_old != None:
-            ea = abs(xr - xr_old) / abs(xr)
+            ea = abs(xr - xr_old)
+            ea_rel = abs(xr - xr_old) / max(abs(xr_old), abs(xr))
         else:
             ea = "-"
 
@@ -33,13 +34,13 @@ def false_position(func, xl, xu, iterations=50, eps=0.00001):
             xl = xr
 
         if evaluateFunc(func, xr) == 0:
-            ea = 0
+            ea_rel = 0
             break
         if i > 0 and ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
-    table = Table("False-Position", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Ea (%)'], iterationRows)
-    return ResultSet(table, xr, calcPrecision(ea), executionTime, i,
+    table = Table("False-Position", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Abs. Error'], iterationRows)
+    return ResultSet(table, xr, calcPrecision(ea_rel), executionTime, i,
                      [sympy.lambdify('x', func, 'numpy'), sympy.lambdify('x', boundaryChordEqn, 'numpy')],
                      vLines=boundaryLines)
 

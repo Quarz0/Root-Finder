@@ -15,20 +15,21 @@ def secant(func, x0, x1, iterations=50, eps=0.00001):
     for i in xrange(iterations):
 
         xi_1 = xi - evaluateFunc(func, xi) * ((xi - x_prev) / (evaluateFunc(func, xi) - evaluateFunc(func, x_prev)))
-        ea = abs(xi - xi_1) / xi_1
+        ea = abs(xi - xi_1)
+        ea_rel = abs(xi - xi_1) / max(abs(xi_1), abs(xi))
 
         iterationRows.append([i + 1, x_prev, evaluateFunc(func, x_prev), xi, evaluateFunc(func, xi), xi_1, ea])
 
         x_prev = xi
         xi = xi_1
 
-        if evaluateFunc(func, xi) == 0: ea = 0
+        if evaluateFunc(func, xi) == 0: ea_rel = 0
         if ea < eps: break
 
     executionTime = timeit.default_timer() - startTime
-    table = Table("Secant", ['Step', 'xi-1', 'f(xi-1)', 'xi', 'f(xi)', 'xi+1', 'Ea (%)'], iterationRows)
+    table = Table("Secant", ['Step', 'xi-1', 'f(xi-1)', 'xi', 'f(xi)', 'xi+1', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea), executionTime, i + 1, [sympy.lambdify('x', func, 'numpy'),
+    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, [sympy.lambdify('x', func, 'numpy'),
                                                                           sympy.lambdify('x', boundaryChordEqn,
                                                                                          'numpy')])
 
