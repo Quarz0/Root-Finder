@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 from matplotlib.pyplot import rcParams
 from sympy import *
 
-from methods import Ui_Dialog
+from methodsUI import Ui_Dialog
 from resultset import ResultSet
 from table import Table
 from util import parseExpr, toLatex
@@ -34,6 +34,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     _canvas = None
     isValidEquation = False
     methodsCheckMapAlias = {}
+    tempResultSets = []
+    tempBoundaries = []
 
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
@@ -236,15 +238,16 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         for i in xrange(3):
             self.graphTabWidget.findChild(FigureCanvas, 'canvas' + str(i)).draw()
 
-    def plotFunctions(self, functions):
+    def plotFunctions(self, equations):
         xs = np.arange(-100.0, 100.0, 0.1)
-        for function in functions:
-            self.plt1.plot(xs, function(xs), c=np.random.rand(3, 1))
+        for equ in equations:
+            if equ.is_vertical:
+                self.plotVLines(equ.get_eqn())
+            else:
+                self.plt1.plot(xs, equ.get_eqn()(xs), c=np.random.rand(3, 1))
 
     def plotVLines(self, vLines):
-        assert type(vLines) is list, "vLines is not of type list!: " + str(type(vLines))
-        for line in vLines:
-            self.plt1.axvline(x=line, c=np.random.rand(3, 1))
+        self.plt1.axvline(x=vLines, c=np.random.rand(3, 1))
 
     def plotHLines(self, hLines):
         assert type(hLines) is list, "hLines is not of type list!: " + str(type(hLines))
@@ -280,6 +283,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         qTable.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
         qTable.setSelectionBehavior(QtGui.QTableWidget.SelectRows)
         qTable.setSelectionMode(QtGui.QTableWidget.SingleSelection)
+        qTable.itemSelectionChanged.connect(self.plotTempBoundaries)
 
         qTable.setRowCount(len(table.getData()))
         for row in xrange(len(table.getData())):
@@ -289,6 +293,16 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                                    table.getData()[row][column]) is float else table.getData()[row][column])))
 
         return qWidget
+
+    def plotTempBoundaries(self):
+        for bound in self.tempBoundaries:
+            bound.remove()
+        self.tempBoundaries[:] = []
+        i = self.resultsTabWidget.currentIndex()
+        item = getattr(self, 'Table%d' % (i + 1)).selectedItems()[0]
+        for bound in self.tempResultSets[i].getBoundaries()[item.row()]:
+            self.tempBoundaries.append(self.plt1.axvline(x=bound.get_eqn(), c=np.random.rand(3, 1)))
+        self.plotAll()
 
     def drawRoot(self, root, rootField):
         assert type(root) is float or int, "root is not of type float nor int!: " + str(type(root))
@@ -308,15 +322,16 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
-        self.plotFunctions(resultSet.getEquations())
-        self.plotHLines(resultSet.getHLines())
-        self.plotVLines(resultSet.getVLines())
+        self.tempResultSets.append(resultSet)
+        self.plotFunctions(resultSet.getEquation())
+        # self.plotHLines(resultSet.getHLines())
+        # self.plotVLines(resultSet.getVLines())
         qWidget = self.drawTable(resultSet.getTable())
         self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
         self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
-        self.plotError(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
-        self.plotRoot(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
+        # self.plotError(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
+        # self.plotRoot(resultSet.getNumberOfIterations(), resultSet.getTable().getData())
 
 
 if __name__ == '__main__':

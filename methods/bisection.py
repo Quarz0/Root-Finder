@@ -1,9 +1,9 @@
 import timeit
 
+from equation import equation
 from resultset import ResultSet
 from table import Table
 from util import *
-from equation import equation
 
 
 def bisection(func, xl, xu, iterations=50, eps=0.00001):

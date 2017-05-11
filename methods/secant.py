@@ -30,8 +30,8 @@ def secant(func, x0, x1, iterations=50, eps=0.00001):
     table = Table("Secant", ['Step', 'xi-1', 'f(xi-1)', 'xi', 'f(xi)', 'xi+1', 'Abs. Error'], iterationRows)
 
     return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, [sympy.lambdify('x', func, 'numpy'),
-                                                                          sympy.lambdify('x', boundaryChordEqn,
-                                                                                         'numpy')])
+                                                                              sympy.lambdify('x', boundaryChordEqn,
+                                                                                             'numpy')])
 
 
 # Test
