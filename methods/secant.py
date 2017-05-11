@@ -7,6 +7,8 @@ from util import *
 
 def secant(func, x0, x1, iterations=50, eps=0.00001):
     iterationRows = []
+    errors = []
+    roots = []
     boundaries = []
     x_prev = x0
     xi = x1
@@ -22,6 +24,8 @@ def secant(func, x0, x1, iterations=50, eps=0.00001):
         ea_rel = abs(xi - xi_1) / max(abs(xi_1), abs(xi))
 
         iterationRows.append([i + 1, x_prev, evaluateFunc(func, x_prev), xi, evaluateFunc(func, xi), xi_1, ea])
+        errors.append((i + 1, ea))
+        roots.append((i + 1, xi_1))
 
         x_prev = xi
         xi = xi_1
@@ -32,8 +36,9 @@ def secant(func, x0, x1, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Secant", ['Step', 'xi-1', 'f(xi-1)', 'xi', 'f(xi)', 'xi+1', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, sympy.lambdify('x', func, 'numpy'),
-                     boundaries=boundaries)
+    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
+                     equation(sympy.lambdify('x', func, 'numpy')),
+                     errors=errors, roots=roots, boundaries=boundaries)
 
 
 # Test

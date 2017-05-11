@@ -1,12 +1,20 @@
 class ResultSet(object):
-    def __init__(self, table=None, root=None, precision=None, time=None, iters=None, equation=None, boundaries=[]):
+    def __init__(self, table=None, root=None, precision=None, time=None, iters=None, equation=None, errors=[], roots=[], boundaries=[]):
         self.table = table
         self.root = root
         self.precision = precision
         self.time = time
         self.numIters = iters
         self.equation = equation
+        self.errors = errors
+        self.roots = roots
         self.boundaries = boundaries
+
+    def getErrors(self):
+        return self.errors
+
+    def getRoots(self):
+        return self.roots
 
     def getBoundaries(self):
         return self.boundaries

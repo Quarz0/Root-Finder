@@ -8,6 +8,8 @@ from util import *
 def fixed_point(func, x0, iterations=50, eps=0.00001):
     iterationRows = []
     boundaries = []
+    errors = []
+    roots = []
     xi = x0
     func = addToFunc(func, 'x')
     startTime = timeit.default_timer()
@@ -22,6 +24,8 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
         ea_rel = abs(xi - xi_1) / max(abs(xi), abs(xi_1))
 
         iterationRows.append([i + 1, xi, xi_1, ea])
+        errors.append((i + 1, ea))
+        roots.append((i + 1, xi_1))
 
         xi = xi_1
 
@@ -30,8 +34,9 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Fixed-Point", ['Step', 'xi', 'xi+1', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, sympy.lambdify('x', func, 'numpy'),
-                     boundaries=boundaries)
+    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
+                     equation(sympy.lambdify('x', func, 'numpy')),
+                     errors=errors, roots=roots, boundaries=boundaries)
 
 
 # Test

@@ -12,6 +12,8 @@ def bisection(func, xl, xu, iterations=50, eps=0.00001):
 
     boundaries = []
     iterationRows = []
+    errors = []
+    roots = []
     startTime = timeit.default_timer()
     xr_old = None
 
@@ -26,6 +28,8 @@ def bisection(func, xl, xu, iterations=50, eps=0.00001):
             ea = "-"
 
         iterationRows.append([i + 1, xl, evaluateFunc(func, xl), xu, evaluateFunc(func, xu), xr, ea])
+        errors.append((i + 1, ea))
+        roots.append((i + 1, xr))
         xr_old = xr
 
         if evaluateFunc(func, xl) * evaluateFunc(func, xr) < 0:
@@ -41,8 +45,9 @@ def bisection(func, xl, xu, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Bisection", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xr, calcPrecision(ea_rel), executionTime, i, equation(sympy.lambdify('x', func, 'numpy')),
-                     boundaries=boundaries)
+    return ResultSet(table, xr, calcPrecision(ea_rel), executionTime, i + 1,
+                     equation(sympy.lambdify('x', func, 'numpy')),
+                     errors=errors, roots=roots, boundaries=boundaries)
 
 
 # Test

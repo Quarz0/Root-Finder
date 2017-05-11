@@ -7,6 +7,8 @@ from util import *
 
 def newton_raphson(func, x0, iterations=50, eps=0.00001):
     iterationRows = []
+    errors = []
+    roots = []
     xi = x0
     boundaries = []
     startTime = timeit.default_timer()
@@ -21,6 +23,8 @@ def newton_raphson(func, x0, iterations=50, eps=0.00001):
         ea_rel = abs(xi - xi_1) / max(abs(xi), abs(xi_1))
 
         iterationRows.append([i + 1, xi, evaluateFunc(func, xi), evaluateNthDerivative(func, xi, 1), xi_1, ea])
+        errors.append((i + 1, ea))
+        roots.append((i + 1, xi_1))
 
         xi = xi_1
 
@@ -30,8 +34,9 @@ def newton_raphson(func, x0, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Newton-Raphson", ['Step', 'xi', 'f(xi)', "f'(xi)", 'xi+1', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1, sympy.lambdify('x', func, 'numpy'),
-                     boundaries=boundaries)
+    return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
+                     equation(sympy.lambdify('x', func, 'numpy')),
+                     errors=errors, roots=roots, boundaries=boundaries)
 
 
 # Test
