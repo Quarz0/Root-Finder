@@ -9,7 +9,8 @@ X = sympy.Symbol('x')
 
 def calcPrecision(ea):
     if ea == 0: return 'Exact'
-    return int(2.0 - math.log10(2.0 * ea))
+    if ea >= 0.5: return 0
+    return int(-1 * math.log10(2.0 * ea))
 
 
 def addToFunc(func, expr):
