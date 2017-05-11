@@ -41,7 +41,7 @@ def bisection(func, xl, xu, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("Bisection", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Abs. Error'], iterationRows)
 
-    return ResultSet(table, xr, calcPrecision(ea_rel), executionTime, i, [equation(sympy.lambdify('x', func, 'numpy'))],
+    return ResultSet(table, xr, calcPrecision(ea_rel), executionTime, i, equation(sympy.lambdify('x', func, 'numpy')),
                      boundaries=boundaryLines)
 
 

@@ -1,18 +1,18 @@
 class ResultSet(object):
-    def __init__(self, table=None, root=None, precision=None, time=None, iters=None, equations=[], boundaries=[]):
+    def __init__(self, table=None, root=None, precision=None, time=None, iters=None, equation=None, boundaries=[]):
         self.table = table
         self.root = root
         self.precision = precision
         self.time = time
         self.numIters = iters
-        self.equations = equations
+        self.equation = equation
         self.boundaries = boundaries
 
     def getBoundaries(self):
         return self.boundaries
 
-    def getEquations(self):
-        return self.equations
+    def getEquation(self):
+        return self.equation
 
     def getTable(self):
         return self.table
