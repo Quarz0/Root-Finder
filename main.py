@@ -95,7 +95,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         for (key, val) in self.methodsCheckMapAlias.items():
             if val[0]:
                 method = str(key.objectName())
-                self.drawResultSet(getattr(importlib.import_module(method), method)(equ, *[float(i) for i in val[1]]))
+                self.drawResultSet(
+                    getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]]))
         # self.canvas.draw()
         self.plotAll()
 
@@ -238,16 +239,15 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         for i in xrange(3):
             self.graphTabWidget.findChild(FigureCanvas, 'canvas' + str(i)).draw()
 
-    def plotFunctions(self, equations):
+    def plotFunction(self, equation):
         xs = np.arange(-100.0, 100.0, 0.1)
-        for equ in equations:
-            if equ.is_vertical:
-                self.plotVLines(equ.get_eqn())
-            else:
-                self.plt1.plot(xs, equ.get_eqn()(xs), c=np.random.rand(3, 1))
+        if equation.is_vertical:
+            return self.plotVLines(equation.get_eqn())
+        else:
+            return self.plt1.plot(xs, equation.get_eqn()(xs), c=np.random.rand(3, 1))
 
     def plotVLines(self, vLines):
-        self.plt1.axvline(x=vLines, c=np.random.rand(3, 1))
+        return self.plt1.axvline(x=vLines, c=np.random.rand(3, 1))
 
     def plotHLines(self, hLines):
         assert type(hLines) is list, "hLines is not of type list!: " + str(type(hLines))
@@ -301,7 +301,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         i = self.resultsTabWidget.currentIndex()
         item = getattr(self, 'Table%d' % (i + 1)).selectedItems()[0]
         for bound in self.tempResultSets[i].getBoundaries()[item.row()]:
-            self.tempBoundaries.append(self.plt1.axvline(x=bound.get_eqn(), c=np.random.rand(3, 1)))
+            self.tempBoundaries.append(self.plotFunction(bound))
         self.plotAll()
 
     def drawRoot(self, root, rootField):
@@ -323,7 +323,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
-        self.plotFunctions(resultSet.getEquation())
+        self.plotFunction(resultSet.getEquation())
         # self.plotHLines(resultSet.getHLines())
         # self.plotVLines(resultSet.getVLines())
         qWidget = self.drawTable(resultSet.getTable())
