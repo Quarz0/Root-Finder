@@ -36,6 +36,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     methodsCheckMapAlias = {}
     tempResultSets = []
     tempBoundaries = []
+    tempTables = []
 
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
@@ -53,6 +54,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquation)
         self.resultsTabWidget.clear()
+        self.resultsTabWidget.currentChanged.connect(self.handleResultTabChanging)
         self.methodsButton.clicked.connect(self.handleMethodsButton)
         self.textRadio.toggled.connect(self.handlePushButtons)
         self.textRadio.toggle()
@@ -90,7 +92,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def solveEquation(self):
-        # self.plt.clear()
         self.clearAll()
         equ = parseExpr(str(self.equationField.text()))
         for (key, val) in self.methodsCheckMapAlias.items():
@@ -98,7 +99,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                 method = str(key.objectName())
                 self.drawResultSet(
                     getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]]))
-        # self.canvas.draw()
         self.plotAll()
 
     @QtCore.pyqtSlot()
@@ -115,10 +115,16 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         print QtGui.QFileDialog.getOpenFileName(self, 'Open equation',
                                                 '', "All (*.*)")
 
+    @QtCore.pyqtSlot()
+    def handleResultTabChanging(self):
+        for tab in self.tempTables:
+            tab.clearSelection()
+
     def clearAll(self):
         count = self.resultsTabWidget.count()
         for i in xrange(count):
             self.resultsTabWidget.widget(i).deleteLater()
+        self.tempTables[:] = []
         self.tempResultSets[:] = []
         self.tempBoundaries[:] = []
         self.clearPlots()
@@ -275,7 +281,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             self.plt1.axhlne(y=line, c=np.random.rand(3, 1))
 
     def plotPoints(self, xs, ys):
-        # plt = self.fig1.add_subplot(111)
         for i in xrange(len(xs)):
             self.plt1.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
 
@@ -300,8 +305,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         qWidget = self.initTableWidget()
         self.resultsTabWidget.addTab(qWidget, QtCore.QString(table.getTitle()))
         qTable = self.resultsTabWidget.findChild(QtGui.QTableWidget, "Table")
+        self.tempTables.append(qTable)
         setattr(self, 'Table%d' % self.resultsTabWidget.count(), qTable)
-
         qTable.setColumnCount(len(table.getHeader()))
         qTable.setHorizontalHeaderLabels(table.getHeader())
         qTable.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
@@ -319,10 +324,17 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def plotTempBoundaries(self):
         for bound in self.tempBoundaries:
+            if type(bound) is list:
+                for lis in bound:
+                    lis.remove()
+                continue
             bound.remove()
         self.tempBoundaries[:] = []
+        self.plotAll()
         i = self.resultsTabWidget.currentIndex()
-        item = getattr(self, 'Table%d' % (i + 1)).selectedItems()[0]
+        if len(self.tempTables[i].selectedItems()) == 0:
+            return
+        item = self.tempTables[i].selectedItems()[0]
         for bound in self.tempResultSets[i].getBoundaries()[item.row()]:
             self.tempBoundaries.append(self.plotFunction(bound))
         self.plotAll()
