@@ -13,8 +13,30 @@ def calcPrecision(ea):
     return int(-1 * math.log10(2.0 * ea))
 
 
-def addToFunc(func, expr):
-    return sympy.Add(func, sympy.Symbol(expr))
+def getXCoeff(func, power):
+    return func.collect(X).coeff(X ** power)
+
+
+def mulFunc(func, symbol=None, num=None, func2=None):
+    temp = func
+    if symbol != None:
+        temp = sympy.Mul(temp, sympy.Symbol(symbol))
+    if num != None:
+        temp = sympy.Mul(temp, sympy.sympify(num))
+    if func2 != None:
+        temp = sympy.Mul(temp, func2)
+    return temp
+
+
+def addToFunc(func, symbol=None, num=None, func2=None):
+    temp = func
+    if symbol != None:
+        temp = sympy.Add(func, sympy.Symbol(symbol))
+    if num != None:
+        temp = sympy.Add(func, sympy.sympify(num))
+    if func2 != None:
+        temp = sympy.Add(temp, func2)
+    return temp
 
 
 def evaluateFunc(f, val):
@@ -37,7 +59,11 @@ def parseExpr(expr):
                 modifiedExpr += c
         else:
             modifiedExpr += c
-    return sympy.parsing.sympy_parser.parse_expr(modifiedExpr)
+
+    func = sympy.parsing.sympy_parser.parse_expr(modifiedExpr)
+    if len(list(func.free_symbols)) > 1 or (len(list(func.free_symbols)) == 1 and list(func.free_symbols)[0] != X):
+        raise ValueError('Invalid variables used in expression')
+    return func
 
 
 def getLineEquation(point1, point2=(), slope=float("nan")):
