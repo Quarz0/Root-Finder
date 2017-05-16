@@ -53,6 +53,9 @@ def parseExpr(expr):
         if c >= 'a' and c <= 'z':
             if len(modifiedExpr) > 0 and modifiedExpr[-1] >= '0' and modifiedExpr[-1] <= '9':
                 modifiedExpr += '*'
+            elif len(modifiedExpr) > 0 and (modifiedExpr[-1] == '.' or modifiedExpr[-1] == 'E'):
+                modifiedExpr += '*'
+
             if c == 'e':
                 modifiedExpr += "E"
             else:
