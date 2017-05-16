@@ -129,10 +129,16 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         if fname:
             save(fname, self.tempResultSets)
 
-    @QtCore.pyqtSlot()
-    def handleResultTabChanging(self):
+    @QtCore.pyqtSlot(int)
+    def handleResultTabChanging(self, index):
+        item = self.tempResultSets[index]
         for tab in self.tempTables:
             tab.clearSelection()
+        self.plt1.cla()
+        self.plt1.grid(true)
+        self.plt1.autoscale(true, tight=false)
+        self.plotFunction(item.getEquation())
+        self.plotAll()
 
     def clearAll(self):
         count = self.resultsTabWidget.count()
@@ -280,7 +286,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             self.graphTabWidget.findChild(FigureCanvas, 'canvas' + str(i)).draw()
 
     def plotFunction(self, equation):
-        xs = np.arange(-100.0, 100.0, 0.1)
+        xs = np.arange(-700.0, 700.0, 0.1)
         if equation.is_vertical:
             return self.plotVLines(equation.get_eqn())
         else:
@@ -372,7 +378,6 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def drawResultSet(self, resultSet):
         assert type(resultSet) is ResultSet, "resultSet is not of type ResultSet!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
-        self.plotFunction(resultSet.getEquation())
         qWidget = self.drawTable(resultSet.getTable())
         self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
         self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
