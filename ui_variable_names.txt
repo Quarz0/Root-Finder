@@ -5,6 +5,8 @@ equationLabel
 maxItersLabel
 epsLabel
 equationField
+maxItersField
+epsField
 textRadio
 fileRadio
 loadFileButton
@@ -46,3 +48,5 @@ generalCheckBox
 latexLayout
 latexFrame
 splitter
+
+exportButton
