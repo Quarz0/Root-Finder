@@ -12,7 +12,7 @@ from sympy import *
 from methodsUI import Ui_Dialog
 from resultset import ResultSet
 from table import Table
-from util import parseExpr, toLatex  # ,load
+from util import parseExpr, toLatex, load
 
 rcParams['mathtext.fontset'] = 'stix'
 
@@ -114,8 +114,10 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def openLoadFileDialog(self):
         fname = QtGui.QFileDialog.getOpenFileName(self, 'Open equation',
                                                   '', "All (*.*)")
-        # if fname:
-        #     load(fname,self,self.dialogUI)
+        if fname:
+            load(fname, self, self.dialogUI)
+            self.cloneOptionsMapInfo()
+            self.solveButtonTrigger.emit()
 
     @QtCore.pyqtSlot()
     def handleResultTabChanging(self):
@@ -166,7 +168,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.dialogUI.buttonBox.button(QtGui.QDialogButtonBox.Ok).setEnabled(buttonState)
 
     def assignReadOnlyHandler(self, state):
-        checkBox = self.sender()
+        checkBox = self.dialogUI.sender()
         for val in self.methodsCheckMap[checkBox]:
             val.setReadOnly(True) if not checkBox.isChecked() else val.setReadOnly(False)
 

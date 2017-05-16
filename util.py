@@ -1,7 +1,7 @@
+import json
 import math
 import sympy
 import sympy.parsing.sympy_parser
-import json
 from sympy import latex
 
 global X
@@ -105,30 +105,30 @@ def load(path, mainWindow, optionsWindow):
         mainWindow.epsField.setText(data['eps'])
 
     if 'bisection' in data.keys():
-        optionsWindow.bisectionCheckBox.setCheckState(True)
+        optionsWindow.bisectionCheckBox.setChecked(True)
         optionsWindow.bisectionXlField.setText(data['bisection']['xl'])
         optionsWindow.bisectionXuField.setText(data['bisection']['xu'])
 
     if 'false_position' in data.keys():
-        optionsWindow.falsePositionCheckBox.setCheckState(True)
+        optionsWindow.falsePositionCheckBox.setChecked(True)
         optionsWindow.falsePositionXlField.setText(data['false_position']['xl'])
         optionsWindow.falsePositionXlField.setText(data['false_position']['xu'])
 
     if 'fixed_point' in data.keys():
-        optionsWindow.fixedPointCheckBox.setCheckState(True)
+        optionsWindow.fixedPointCheckBox.setChecked(True)
         optionsWindow.fixedPointX0Field.setText(data['fixed_point']['x0'])
 
     if 'newton_raphson' in data.keys():
-        optionsWindow.newtonRaphsonCheckBox.setCheckState(True)
+        optionsWindow.newtonRaphsonCheckBox.setChecked(True)
         optionsWindow.newtonRaphsonX0Field.setText(data['newton_raphson']['x0'])
 
     if 'secant' in data.keys():
-        optionsWindow.secantCheckBox.setCheckState(True)
+        optionsWindow.secantCheckBox.setChecked(True)
         optionsWindow.secantX0Field.setText(data['secant']['x0'])
         optionsWindow.secantX1Field.setText(data['secant']['x1'])
 
     if 'birge_vieta' in data.keys():
-        optionsWindow.birgeVietaCheckBox.setCheckState(True)
+        optionsWindow.birgeVietaCheckBox.setChecked(True)
         optionsWindow.birgeVietaX0Field.setText(data['birge_vieta']['x0'])
 
 
@@ -144,4 +144,3 @@ def save(path, resultSets):
                                                            'Data': resultSet.getTable().getData()}}
     with open(path, 'w') as file:
         json.dump(data, file)
-
