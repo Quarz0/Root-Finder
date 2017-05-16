@@ -12,7 +12,7 @@ from sympy import *
 from methodsUI import Ui_Dialog
 from resultset import ResultSet
 from table import Table
-from util import parseExpr, toLatex
+from util import parseExpr, toLatex  # ,load
 
 rcParams['mathtext.fontset'] = 'stix'
 
@@ -112,8 +112,10 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def openLoadFileDialog(self):
-        print QtGui.QFileDialog.getOpenFileName(self, 'Open equation',
-                                                '', "All (*.*)")
+        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open equation',
+                                                  '', "All (*.*)")
+        # if fname:
+        #     load(fname,self,self.dialogUI)
 
     @QtCore.pyqtSlot()
     def handleResultTabChanging(self):
@@ -356,7 +358,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         timeField.setText(str(('%g' % time)))
 
     def drawResultSet(self, resultSet):
-        assert type(resultSet) is ResultSet, "table is not of type Table!: " + str(type(resultSet))
+        assert type(resultSet) is ResultSet, "resultSet is not of type ResultSet!: " + str(type(resultSet))
         self.tempResultSets.append(resultSet)
         self.plotFunction(resultSet.getEquation())
         qWidget = self.drawTable(resultSet.getTable())

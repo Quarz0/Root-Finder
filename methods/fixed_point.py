@@ -54,4 +54,3 @@ if __name__ == '__main__':
     stra = 'x^2 - 2x - 3'
     expr = parseExpr(stra)
     print fixed_point(expr, 4, eps=0.000001, iterations=100)
-
