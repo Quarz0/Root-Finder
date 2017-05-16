@@ -287,18 +287,18 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     def plotFunction(self, equation):
         xs = np.arange(-700.0, 700.0, 0.1)
-        if equation.is_vertical:
+        if equation.isVertical():
             return self.plotVLines(equation.get_eqn())
+        elif equation.isHorizontal():
+            return self.plotHLines(equation.get_eqn())
         else:
-            return self.plt1.plot(xs, equation.get_eqn()(xs), c=np.random.rand(3, 1))
+            return self.plt1.plot(xs, lambdify('x', equation.get_eqn(), 'numpy')(xs), c=np.random.rand(3, 1))
 
     def plotVLines(self, vLines):
         return self.plt1.axvline(x=vLines, c=np.random.rand(3, 1))
 
     def plotHLines(self, hLines):
-        assert type(hLines) is list, "hLines is not of type list!: " + str(type(hLines))
-        for line in hLines:
-            self.plt1.axhlne(y=line, c=np.random.rand(3, 1))
+        return self.plt1.axhline(y=hLines, c=np.random.rand(3, 1))
 
     def plotPoints(self, xs, ys):
         for i in xrange(len(xs)):

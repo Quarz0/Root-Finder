@@ -14,8 +14,11 @@ class equation(object):
     def get_eqn(self):
         return self.eqn
 
-    def is_vertical(self):
+    def isVertical(self):
         return self.is_vertical
+
+    def isHorizontal(self):
+        return self.is_horizontal
 
     def __str__(self):
         return str(self.eqn)
