@@ -18,9 +18,9 @@ def false_position(func, xl, xu, iterations=50, eps=0.00001):
     xr_old = None
 
     for i in xrange(iterations):
-        boundaries.append([equation(xl, True), equation(xu, True),
-                           equation(sympy.lambdify('x', getLineEquation((xl, evaluateFunc(func, xl)),
-                                                                        (xu, evaluateFunc(func, xu))), 'numpy'))])
+        boundaries.append([equation(xl, is_vertical=True), equation(xu, is_vertical=True),
+                           equation(getLineEquation((xl, evaluateFunc(func, xl)),
+                                                    (xu, evaluateFunc(func, xu))))])
 
         xr = (xl * evaluateFunc(func, xu) - xu * evaluateFunc(func, xl)) / (
             evaluateFunc(func, xu) - evaluateFunc(func, xl))
@@ -49,8 +49,7 @@ def false_position(func, xl, xu, iterations=50, eps=0.00001):
     executionTime = timeit.default_timer() - startTime
     table = Table("False-Position", ['Step', 'xl', 'f(xl)', 'xu', 'f(xu)', 'xr', 'Abs. Error'], iterationRows)
     return ResultSet(table, xr, calcPrecision(ea_rel), executionTime, i + 1,
-                     equation(sympy.lambdify('x', func, 'numpy')),
-                     errors=errors, roots=roots, boundaries=boundaries)
+                     equation(func), errors=errors, roots=roots, boundaries=boundaries)
 
 
 # Test

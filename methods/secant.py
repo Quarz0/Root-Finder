@@ -17,8 +17,7 @@ def secant(func, x0, x1, iterations=50, eps=0.00001):
 
     for i in xrange(iterations):
         boundaries.append([equation(
-            sympy.lambdify('x', getLineEquation((x_prev, evaluateFunc(func, x_prev)), (xi, evaluateFunc(func, xi))),
-                           'numpy'))])
+            getLineEquation((x_prev, evaluateFunc(func, x_prev)), (xi, evaluateFunc(func, xi))))])
 
         xi_1 = xi - evaluateFunc(func, xi) * ((xi - x_prev) / (evaluateFunc(func, xi) - evaluateFunc(func, x_prev)))
         ea = abs(xi - xi_1)
@@ -38,8 +37,7 @@ def secant(func, x0, x1, iterations=50, eps=0.00001):
     table = Table("Secant", ['Step', 'xi-1', 'f(xi-1)', 'xi', 'f(xi)', 'xi+1', 'Abs. Error'], iterationRows)
 
     return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
-                     equation(sympy.lambdify('x', func, 'numpy')),
-                     errors=errors, roots=roots, boundaries=boundaries)
+                     equation(func), errors=errors, roots=roots, boundaries=boundaries)
 
 
 # Test
