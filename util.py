@@ -134,13 +134,13 @@ def load(path, mainWindow, optionsWindow):
 
 def save(path, resultSets):
     data = {}
-    data['equation'] = resultSets[0].getEquation()
     for resultSet in resultSets:
-        data[resultSet.getTable().getTitle()] = {'Root': resultSet.getRoot(),
+        data[resultSet.getTable().getTitle()] = {'Equation': resultSet.getEquation(),
+                                                 'Root': resultSet.getRoot(),
                                                  'Number of iterations': resultSet.getNumberOfIterations(),
                                                  'Precision': resultSet.getPrecision(),
                                                  'Execution Time': resultSet.getExecutionTime(),
                                                  'Table': {'Header': resultSet.getTable().getHeader(),
                                                            'Data': resultSet.getTable().getData()}}
     with open(path, 'w') as file:
-        json.dump(data, file)
+        json.dump(castJsonToString(data), file, indent=4, sort_keys=True)
