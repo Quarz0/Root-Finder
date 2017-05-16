@@ -51,6 +51,14 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         # self.plt.axis([-6, 6, -1, 1])
         # self.equationField.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("\w"), self))
 
+        intValidator = QtGui.QIntValidator()
+        intValidator.setBottom(1)
+        self.maxItersField.setValidator(intValidator)
+        self.maxItersField.setPlaceholderText("50 by default")
+        floatValidator = QtGui.QDoubleValidator()
+        floatValidator.setBottom(0)
+        self.epsField.setValidator(floatValidator)
+        self.epsField.setPlaceholderText("0.00001 by default")
         self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquation)
         self.resultsTabWidget.clear()
@@ -100,7 +108,11 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             if val[0]:
                 method = str(key.objectName())
                 self.drawResultSet(
-                    getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]]))
+                    getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]],
+                                                                                  iterations=int(
+                                                                                      self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                  eps=float(
+                                                                                      self.epsField.text() if self.epsField.text() else 0.00001)))
         self.plotAll()
         self.exportButton.setDisabled(len(self.tempResultSets) == 0)
 
