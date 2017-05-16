@@ -1,6 +1,7 @@
 import math
 import sympy
 import sympy.parsing.sympy_parser
+import json
 from sympy import latex
 
 global X
@@ -81,3 +82,66 @@ def toLatex(equation):
         return (True, latex(parseExpr(str(equation)), mode='inline'))
     except (SyntaxError, ValueError, UnicodeEncodeError, sympy.parsing.sympy_tokenize.TokenError) as e:
         return (False, equation)
+
+
+def castJsonToString(data):
+    for key in data.keys():
+        if type(data[key]) == type({}):
+            data[key] = castJsonToString(data[key])
+        else:
+            data[key] = str(data[key])
+    return data
+
+
+def load(path, mainWindow, optionsWindow):
+    with open(path, 'r') as file:
+        data = json.load(file)
+    data = castJsonToString(data)
+
+    mainWindow.equationField.setText(data['equation'])
+    if 'max_iters' in data.keys():
+        mainWindow.maxItersField.setText(data['max_iters'])
+    if 'eps' in data.keys():
+        mainWindow.epsField.setText(data['eps'])
+
+    if 'bisection' in data.keys():
+        optionsWindow.bisectionCheckBox.setCheckState(True)
+        optionsWindow.bisectionXlField.setText(data['bisection']['xl'])
+        optionsWindow.bisectionXuField.setText(data['bisection']['xu'])
+
+    if 'false_position' in data.keys():
+        optionsWindow.falsePositionCheckBox.setCheckState(True)
+        optionsWindow.falsePositionXlField.setText(data['false_position']['xl'])
+        optionsWindow.falsePositionXlField.setText(data['false_position']['xu'])
+
+    if 'fixed_point' in data.keys():
+        optionsWindow.fixedPointCheckBox.setCheckState(True)
+        optionsWindow.fixedPointX0Field.setText(data['fixed_point']['x0'])
+
+    if 'newton_raphson' in data.keys():
+        optionsWindow.newtonRaphsonCheckBox.setCheckState(True)
+        optionsWindow.newtonRaphsonX0Field.setText(data['newton_raphson']['x0'])
+
+    if 'secant' in data.keys():
+        optionsWindow.secantCheckBox.setCheckState(True)
+        optionsWindow.secantX0Field.setText(data['secant']['x0'])
+        optionsWindow.secantX1Field.setText(data['secant']['x1'])
+
+    if 'birge_vieta' in data.keys():
+        optionsWindow.birgeVietaCheckBox.setCheckState(True)
+        optionsWindow.birgeVietaX0Field.setText(data['birge_vieta']['x0'])
+
+
+def save(path, resultSets):
+    data = {}
+    data['equation'] = resultSets[0].getEquation()
+    for resultSet in resultSets:
+        data[resultSet.getTable().getTitle()] = {'Root': resultSet.getRoot(),
+                                                 'Number of iterations': resultSet.getNumberOfIterations(),
+                                                 'Precision': resultSet.getPrecision(),
+                                                 'Execution Time': resultSet.getExecutionTime(),
+                                                 'Table': {'Header': resultSet.getTable().getHeader(),
+                                                           'Data': resultSet.getTable().getData()}}
+    with open(path, 'w') as file:
+        json.dump(data, file)
+
