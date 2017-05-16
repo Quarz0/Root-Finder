@@ -12,7 +12,7 @@ from sympy import *
 from methodsUI import Ui_Dialog
 from resultset import ResultSet
 from table import Table
-from util import parseExpr, toLatex, load
+from util import parseExpr, toLatex, load, save
 
 rcParams['mathtext.fontset'] = 'stix'
 
@@ -64,6 +64,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
         self.loadFileButton.setDisabled(True)
         self.loadFileButton.clicked.connect(self.openLoadFileDialog)
+        self.exportButton.setDisabled(True)
+        self.exportButton.clicked.connect(self.openSaveFileDialog)
         self.fileRadio.toggled.connect(self.handlePushButtons)
 
         self.equationField.textChanged.connect(self.drawLatex)
@@ -100,6 +102,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                 self.drawResultSet(
                     getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]]))
         self.plotAll()
+        self.exportButton.setDisabled(len(self.tempResultSets) == 0)
 
     @QtCore.pyqtSlot()
     def handleSolveButton(self):
@@ -118,6 +121,13 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             load(fname, self, self.dialogUI)
             self.cloneOptionsMapInfo()
             self.solveButtonTrigger.emit()
+
+    @QtCore.pyqtSlot()
+    def openSaveFileDialog(self):
+        fname = QtGui.QFileDialog.getSaveFileName(self, 'Save equation',
+                                                  '', "All (*.*)")
+        if fname:
+            save(fname, self.tempResultSets)
 
     @QtCore.pyqtSlot()
     def handleResultTabChanging(self):
