@@ -24,9 +24,8 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
     startTime = timeit.default_timer()
 
     for i in xrange(iterations):
-        boundaries.append([equation(sympy.lambdify('x', getLineEquation((0, 0), slope=1), 'numpy')), equation(xi, True),
-                           equation(
-                               sympy.lambdify('x', getLineEquation((0, evaluateFunc(func, xi)), slope=0), 'numpy'))])
+        boundaries.append([equation(getLineEquation((0, 0), slope=1)), equation(xi, True),
+                           equation(getLineEquation((0, evaluateFunc(func, xi)), slope=0))])
 
         xi_1 = evaluateFunc(func, xi)
         ea = abs(xi - xi_1)
@@ -43,8 +42,7 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
     table = Table("Fixed-Point", ['Step', 'xi', 'xi+1', 'Abs. Error'], iterationRows)
 
     return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
-                     equation(sympy.lambdify('x', func, 'numpy')),
-                     errors=errors, roots=roots, boundaries=boundaries)
+                     equation(func), errors=errors, roots=roots, boundaries=boundaries)
 
 
 # Test
