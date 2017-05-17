@@ -17,7 +17,7 @@ def modified_newton_raphson(func, x0, iterations=50, eps=0.00001):
     for i in xrange(iterations):
 
         xi_1 = xi - (evaluateFunc(func, xi) * evaluateNthDerivative(func, xi, 1)) / (
-            evaluateNthDerivative(func, xi, 1)**2 - (evaluateFunc(func, xi) * evaluateNthDerivative(func, xi, 2)))
+            evaluateNthDerivative(func, xi, 1) ** 2 - (evaluateFunc(func, xi) * evaluateNthDerivative(func, xi, 2)))
         # print xi_1, xi
 
         ea = abs(xi - xi_1)
@@ -38,7 +38,6 @@ def modified_newton_raphson(func, x0, iterations=50, eps=0.00001):
     return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
                      equation('x', func), errors=errors, roots=roots, boundaries=boundaries)
 
-
 # Test
 # if __name__ == '__main__':
 # stra = "x^5 - 11x^4+46x^3 - 90 * x^2 + 81x - 27"
@@ -46,5 +45,3 @@ def modified_newton_raphson(func, x0, iterations=50, eps=0.00001):
 # expr = parseExpr(stra)
 #
 # print modified_newton_raphson(expr, 0.1)
-
-

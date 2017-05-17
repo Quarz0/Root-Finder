@@ -1,6 +1,7 @@
 import importlib
 import numpy as np
 from PyQt4 import QtCore, QtGui, uic
+from math import fabs
 from matplotlib.backends.backend_ps import FigureCanvas
 from matplotlib.backends.backend_qt4agg import (
     FigureCanvasQTAgg as FigureCanvas,
@@ -13,7 +14,7 @@ from sympy.abc import x
 from methodsUI import Ui_Dialog
 from resultset import ResultSet
 from table import Table
-from util import parseExpr, toLatex, load, save
+from util import parseExpr, toLatex, load, save, evaluateFunc
 
 rcParams['mathtext.fontset'] = 'stix'
 
@@ -117,13 +118,25 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                                                                                           self.maxItersField.text() if self.maxItersField.text() else 50),
                                                                                       eps=float(
                                                                                           self.epsField.text() if self.epsField.text() else 0.00001)))
-                    absErrs = self.tempResultSets[len(self.tempResultSets) - 1].getErrors()
-                    if len(absErrs) >= 2 and absErrs[len(absErrs) - 2] - absErrs[len(absErrs) - 1] < 0:
-                        if not warr:
-                            warr += method
-                        else:
-                            warr += ', ' + method
-                except:
+                    if method == 'fixed_point':
+                        if fabs(fabs(
+                                evaluateFunc(self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
+                                             self.tempResultSets[len(self.tempResultSets) - 1].getRoot())) -
+                                        self.tempResultSets[len(self.tempResultSets) - 1].getRoot()) > 0.00001:
+                            if not warr:
+                                warr += method
+                            else:
+                                warr += ', ' + method
+                    else:
+                        if fabs(
+                                evaluateFunc(self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
+                                             self.tempResultSets[len(self.tempResultSets) - 1].getRoot())) > 0.00001:
+                            if not warr:
+                                warr += method
+                            else:
+                                warr += ', ' + method
+                except () as e:
+                    print e
                     if not errs:
                         errs += method
                     else:
@@ -437,7 +450,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         msg.setIcon(QtGui.QMessageBox.Warning)
 
         msg.setText("Possible divergence!")
-        msg.setInformativeText("An error misbehaviour has been detected.\nWe encourage you to try different bounds.")
+        msg.setInformativeText(
+            "A non-acurate root has been detected.\nWe encourage you to try again with different bounds/#iterations.")
         msg.setWindowTitle("Warning!")
         msg.setDetailedText('The following methods(s) may have diverged:\n' + warning)
         msg.setStandardButtons(QtGui.QMessageBox.Ok)
