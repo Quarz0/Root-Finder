@@ -1,10 +1,10 @@
 import timeit
+from math import log10
 
 from equation import equation
 from resultset import ResultSet
 from table import Table
 from util import *
-from math import log10
 
 
 def bisection(func, xl, xu, iterations=50, eps=0.00001):

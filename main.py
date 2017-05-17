@@ -127,6 +127,10 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                                 warr += method
                             else:
                                 warr += ', ' + method
+                            warr += '(' + str(fabs(fabs(
+                                evaluateFunc(self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
+                                             self.tempResultSets[len(self.tempResultSets) - 1].getRoot())) -
+                                                   self.tempResultSets[len(self.tempResultSets) - 1].getRoot())) + ')'
                     else:
                         if fabs(
                                 evaluateFunc(self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
@@ -135,6 +139,10 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                                 warr += method
                             else:
                                 warr += ', ' + method
+                            warr += '(' + str(fabs(
+                                evaluateFunc(
+                                    self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
+                                    self.tempResultSets[len(self.tempResultSets) - 1].getRoot()))) + ')'
                 except () as e:
                     print e
                     if not errs:
@@ -180,8 +188,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             tab.clearSelection()
         self.plt1.cla()
         self.plt1.grid(true)
-        self.plt1.set_xlim([-700.0, 700.0])
-        self.plt1.set_ylim([-700.0, 700.0])
+        self.plt1.set_xlim([-700.0 / 4, 700.0 / 4])
+        self.plt1.set_ylim([-700.0 / 4, 700.0 / 4])
         self.plotFunction(item.getEquation())
         self.plotAll()
 
@@ -197,8 +205,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def clearPlots(self):
         self.plt1.cla()
         self.plt1.grid(true)
-        self.plt1.set_xlim([-700.0, 700.0])
-        self.plt1.set_ylim([-700.0, 700.0])
+        self.plt1.set_xlim([-700.0 / 4, 700.0 / 4])
+        self.plt1.set_ylim([-700.0 / 4, 700.0 / 4])
         self.plt2.cla()
         self.plt2.grid(true)
         self.plt2.autoscale(true, tight=false)
@@ -324,8 +332,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             i += 1
 
         self.plt1 = self.figs[0][1][0]
-        self.plt1.set_xlim([-700.0, 700.0])
-        self.plt1.set_ylim([-700.0, 700.0])
+        self.plt1.set_xlim([-700.0 / 4, 700.0 / 4])
+        self.plt1.set_ylim([-700.0 / 4, 700.0 / 4])
         self.plt2 = self.figs[1][1][0]
         self.plt3 = self.figs[2][1][0]
 
