@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qt4agg import (
 from matplotlib.figure import Figure
 from matplotlib.pyplot import rcParams
 from sympy import *
+from sympy.abc import x
 
 from methodsUI import Ui_Dialog
 from resultset import ResultSet
@@ -51,6 +52,14 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         # self.plt.axis([-6, 6, -1, 1])
         # self.equationField.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp("\w"), self))
 
+        intValidator = QtGui.QIntValidator()
+        intValidator.setBottom(1)
+        self.maxItersField.setValidator(intValidator)
+        self.maxItersField.setPlaceholderText("50 by default")
+        floatValidator = QtGui.QDoubleValidator()
+        floatValidator.setBottom(0)
+        self.epsField.setValidator(floatValidator)
+        self.epsField.setPlaceholderText("0.00001 by default")
         self.solveButton.setEnabled(False)
         self.solveButton.clicked.connect(self.solveEquation)
         self.resultsTabWidget.clear()
@@ -100,7 +109,11 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             if val[0]:
                 method = str(key.objectName())
                 self.drawResultSet(
-                    getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]]))
+                    getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]],
+                                                                                  iterations=int(
+                                                                                      self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                  eps=float(
+                                                                                      self.epsField.text() if self.epsField.text() else 0.00001)))
         self.plotAll()
         self.exportButton.setDisabled(len(self.tempResultSets) == 0)
 
@@ -136,7 +149,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             tab.clearSelection()
         self.plt1.cla()
         self.plt1.grid(true)
-        self.plt1.autoscale(true, tight=false)
+        self.plt1.set_xlim([-700.0, 700.0])
+        self.plt1.set_ylim([-700.0, 700.0])
         self.plotFunction(item.getEquation())
         self.plotAll()
 
@@ -152,7 +166,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
     def clearPlots(self):
         self.plt1.cla()
         self.plt1.grid(true)
-        self.plt1.autoscale(true, tight=false)
+        self.plt1.set_xlim([-700.0, 700.0])
+        self.plt1.set_ylim([-700.0, 700.0])
         self.plt2.cla()
         self.plt2.grid(true)
         self.plt2.autoscale(true, tight=false)
@@ -274,10 +289,12 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             toolbar = NavigationToolbar(canvas,
                                         ls[2], coordinates=True)
             ls[1].addWidget(toolbar)
-            ls[0].autoscale(true, tight=false)
+            # ls[0].autoscale(true, tight=false)
             i += 1
 
         self.plt1 = self.figs[0][1][0]
+        self.plt1.set_xlim([-700.0, 700.0])
+        self.plt1.set_ylim([-700.0, 700.0])
         self.plt2 = self.figs[1][1][0]
         self.plt3 = self.figs[2][1][0]
 
@@ -292,7 +309,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         elif equation.isHorizontal():
             return self.plotHLines(equation.get_eqn())
         else:
-            return self.plt1.plot(xs, lambdify('x', equation.get_eqn(), 'numpy')(xs), c=np.random.rand(3, 1))
+            fun = lambdify((x), equation.get_eqn(), 'numpy')
+            return self.plt1.plot(xs, fun(xs), c=np.random.rand(3, 1))
 
     def plotVLines(self, vLines):
         return self.plt1.axvline(x=vLines, c=np.random.rand(3, 1))
