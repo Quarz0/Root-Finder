@@ -12,7 +12,7 @@ from util import *
 def birge_vieta(func, xa, iterations=50, eps=0.00001):
     coeff = Poly(func, x).all_coeffs()
     deg = degree(func, gen=x)
-
+    coeff = [float(i) for i in coeff]
     sol = [xa]
     iterationRows = []
     errors = []
@@ -20,29 +20,19 @@ def birge_vieta(func, xa, iterations=50, eps=0.00001):
 
     if deg <= 1:
         return
-
     startTime = timeit.default_timer()
-    for i in xrange(deg, 1, -1):
-        for j in xrange(1, iterations + 1):
-            p = coeff[0]
-            d = p
-            for k in xrange(1, i):
-                p = p * xa + coeff[k]
-                d = d * xa + p
-            p = p * xa + coeff[i]
-            d = -p / d if d else -p
-            xa += d
-            if fabs(d) <= eps * fabs(xa):
-                break
-        if j == iterations:
+    for i in xrange(iterations):
+        b = [coeff[0]]
+        for j in xrange(len(coeff) - 1):
+            b.append((xa * b[j]) + coeff[j + 1])
+        c = [coeff[0]]
+        for j in xrange(len(coeff) - 2):
+            c.append((xa * c[j]) + coeff[j + 1])
+        xa -= b[len(b) - 1] / c[len(c) - 1]
+        sol.append(xa)
+        if fabs(1 - sol[len(sol) - 2] / xa) <= eps:
             break
 
-        sol.append(xa)
-        print sol
-        for k in xrange(1, i):
-            coeff[k] += coeff[k - 1] * xa
-
-    sol.append(-coeff[1] / coeff[0])
     executionTime = timeit.default_timer() - startTime
 
     x_old = None
