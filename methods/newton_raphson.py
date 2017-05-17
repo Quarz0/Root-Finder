@@ -35,7 +35,8 @@ def newton_raphson(func, x0, iterations=50, eps=0.00001):
     table = Table("Newton-Raphson", ['Step', 'xi', 'f(xi)', "f'(xi)", 'xi+1', 'Abs. Error'], iterationRows)
 
     return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
-                     equation('x', func), errors=errors, roots=roots, boundaries=boundaries)
+                     equation('x', func), errors=errors, roots=roots, boundaries=boundaries, errorBound=abs(
+            ((x0 - xi) ** 2 * evaluateNthDerivative(func, x0, 2)) / (2.0 * evaluateNthDerivative(func, x0, 1))))
 
 
 # Test

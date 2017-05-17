@@ -4,12 +4,14 @@ from equation import equation
 from resultset import ResultSet
 from table import Table
 from util import *
+from math import log10
 
 
 def bisection(func, xl, xu, iterations=50, eps=0.00001):
     if evaluateFunc(func, xl) * evaluateFunc(func, xu) > 0:
         return float('nan')
 
+    k = int((log10(xu - xl) - log10(eps)) / log10(2.0))
     boundaries = []
     iterationRows = []
     errors = []
@@ -56,5 +58,5 @@ def bisection(func, xl, xu, iterations=50, eps=0.00001):
 # str = 'x^3 - 0.165x^2 + 10^-4'
 # expr = parseExpr(str)
 # print expr.collect(X)
-
+#
 # print bisection(expr, 0.00, 0.11)
