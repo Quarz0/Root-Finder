@@ -103,17 +103,35 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot()
     def solveEquation(self):
+        errs = ''
+        warr = ''
         self.clearAll()
         equ = parseExpr(str(self.equationField.text()))
         for (key, val) in self.methodsCheckMapAlias.items():
             if val[0]:
                 method = str(key.objectName())
-                self.drawResultSet(
-                    getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]],
-                                                                                  iterations=int(
-                                                                                      self.maxItersField.text() if self.maxItersField.text() else 50),
-                                                                                  eps=float(
-                                                                                      self.epsField.text() if self.epsField.text() else 0.00001)))
+                try:
+                    self.drawResultSet(
+                        getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]],
+                                                                                      iterations=int(
+                                                                                          self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                      eps=float(
+                                                                                          self.epsField.text() if self.epsField.text() else 0.00001)))
+                    absErrs = self.tempResultSets[len(self.tempResultSets) - 1].getErrors()
+                    if len(absErrs) >= 2 and absErrs[len(absErrs) - 2] - absErrs[len(absErrs) - 1] < 0:
+                        if not warr:
+                            warr += method
+                        else:
+                            warr += ', ' + method
+                except:
+                    if not errs:
+                        errs += method
+                    else:
+                        errs += ', ' + method
+        if errs:
+            self.showErrorMessage(errs + '.')
+        if warr:
+            self.showWarningMessage(warr + '.')
         self.plotAll()
         self.exportButton.setDisabled(len(self.tempResultSets) == 0)
 
@@ -402,6 +420,28 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
         self.plotError(resultSet.getErrors())
         self.plotRoot(resultSet.getRoots())
+
+    def showErrorMessage(self, error):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Critical)
+
+        msg.setText("Evaluation failure")
+        msg.setInformativeText("An error occurred while trying to evaluate the root(s)")
+        msg.setWindowTitle("Error!")
+        msg.setDetailedText('A divison by zero occured in the following method(s):\n' + error)
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+        msg.exec_()
+
+    def showWarningMessage(self, warning):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+
+        msg.setText("Possible divergence!")
+        msg.setInformativeText("An error misbehaviour has been detected.\nWe encourage you to try different bounds.")
+        msg.setWindowTitle("Warning!")
+        msg.setDetailedText('The following methods(s) may have diverged:\n' + warning)
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+        msg.exec_()
 
 
 if __name__ == '__main__':
