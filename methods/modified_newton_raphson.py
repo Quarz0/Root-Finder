@@ -36,7 +36,7 @@ def modified_newton_raphson(func, x0, iterations=50, eps=0.00001):
     table = Table("Modified-Newton-Raphson", ['Step', 'xi', 'f(xi)', "f'(xi)", 'xi+1', 'Abs. Error'], iterationRows)
 
     return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
-                     equation('x', func), errors=errors, roots=roots, boundaries=boundaries)
+                     equation(func), errors=errors, roots=roots, boundaries=boundaries)
 
 # Test
 # if __name__ == '__main__':

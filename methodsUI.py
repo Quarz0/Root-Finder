@@ -191,7 +191,7 @@ class Ui_Dialog(QtGui.QDialog):
         self.verticalLayout_7.setContentsMargins(-1, -1, -1, 0)
         self.verticalLayout_7.setObjectName(_fromUtf8("verticalLayout_7"))
         self.birgeVietaCheckBox = QtGui.QCheckBox(self.widget_11)
-        self.birgeVietaCheckBox.setObjectName(_fromUtf8("birgeVietaCheckBox"))
+        self.birgeVietaCheckBox.setObjectName(_fromUtf8("birge_vieta"))
         self.verticalLayout_7.addWidget(self.birgeVietaCheckBox)
         self.verticalLayout.addWidget(self.widget_11)
         self.widget_12 = QtGui.QWidget(self.widget)
@@ -214,7 +214,7 @@ class Ui_Dialog(QtGui.QDialog):
         self.verticalLayout_8.setContentsMargins(-1, -1, -1, 0)
         self.verticalLayout_8.setObjectName(_fromUtf8("verticalLayout_8"))
         self.generalCheckBox = QtGui.QCheckBox(self.widget_14)
-        self.generalCheckBox.setObjectName(_fromUtf8("generalCheckBox"))
+        self.generalCheckBox.setObjectName(_fromUtf8("general_method"))
         self.verticalLayout_8.addWidget(self.generalCheckBox)
         self.verticalLayout.addWidget(self.widget_14)
 

@@ -2,10 +2,10 @@ import timeit
 from math import fabs
 from sympy import Poly, degree
 from sympy.abc import x
-from resultset import ResultSet
-from equation import equation
-from table import Table
 
+from equation import equation
+from resultset import ResultSet
+from table import Table
 from util import *
 
 
@@ -38,7 +38,7 @@ def birge_vieta(func, xa, iterations=50, eps=0.00001):
             break
 
         sol.append(xa)
-
+        print sol
         for k in xrange(1, i):
             coeff[k] += coeff[k - 1] * xa
 
@@ -52,9 +52,9 @@ def birge_vieta(func, xa, iterations=50, eps=0.00001):
             ea_rel = abs(sol[i] - x_old) / max(abs(x_old), abs(sol[i]))
         else:
             ea = "-"
-        iterationRows.append([i+1, sol[i], evaluateFunc(func, sol[i]), ea])
-        errors.append((i+1, ea))
-        roots.append((i+1, sol[i]))
+        iterationRows.append([i + 1, sol[i], evaluateFunc(func, sol[i]), ea])
+        errors.append((i + 1, ea))
+        roots.append((i + 1, sol[i]))
         x_old = sol[i]
 
     table = Table("Birge-Vieta", ['Step', 'xi', 'f(xi)', 'Abs. Error'], iterationRows)
@@ -68,7 +68,7 @@ def f(x):
 
 
 if __name__ == '__main__':
-    str = 'x^3-x^2-x+1'
+    str = 'x^3 -5*x + 6'
     expr = parseExpr(str)
-#
-    print birge_vieta(expr, 0.5)
+    #
+    print birge_vieta(expr, 0)

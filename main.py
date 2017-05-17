@@ -112,12 +112,17 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             if val[0]:
                 method = str(key.objectName())
                 try:
-                    self.drawResultSet(
-                        getattr(importlib.import_module('methods.' + method), method)(equ, *[float(i) for i in val[1]],
-                                                                                      iterations=int(
-                                                                                          self.maxItersField.text() if self.maxItersField.text() else 50),
-                                                                                      eps=float(
-                                                                                          self.epsField.text() if self.epsField.text() else 0.00001)))
+                    if method == 'general_method':
+                        self.drawResultSet(
+                            getattr(importlib.import_module('methods.' + method), method)(equ))
+                    else:
+                        self.drawResultSet(
+                            getattr(importlib.import_module('methods.' + method), method)(equ,
+                                                                                          *[float(i) for i in val[1]],
+                                                                                          iterations=int(
+                                                                                              self.maxItersField.text() if self.maxItersField.text() else 50),
+                                                                                          eps=float(
+                                                                                              self.epsField.text() if self.epsField.text() else 0.00001)))
                     if method == 'fixed_point':
                         if fabs(fabs(
                                 evaluateFunc(self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
@@ -143,7 +148,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                                 evaluateFunc(
                                     self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
                                     self.tempResultSets[len(self.tempResultSets) - 1].getRoot()))) + ')'
-                except () as e:
+                except (ValueError) as e:
                     print e
                     if not errs:
                         errs += method
@@ -412,8 +417,9 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         if len(self.tempTables[i].selectedItems()) == 0:
             return
         item = self.tempTables[i].selectedItems()[0]
-        for bound in self.tempResultSets[i].getBoundaries()[item.row()]:
-            self.tempBoundaries.append(self.plotFunction(bound))
+        if len(self.tempResultSets[i].getBoundaries()) != 0:
+            for bound in self.tempResultSets[i].getBoundaries()[item.row()]:
+                self.tempBoundaries.append(self.plotFunction(bound))
         self.plotAll()
 
     def drawRoot(self, root, rootField):
