@@ -299,13 +299,20 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         precisionField.setReadOnly(True)
         timeLabel = QtGui.QLabel()
         timeLabel.setText("Time")
+        errorBoundLabel = QtGui.QLabel()
+        errorBoundLabel.setText("Error Bound")
         timeField = QtGui.QLineEdit()
         timeField.setObjectName("Time")
         timeField.setReadOnly(True)
+        errorBoundField = QtGui.QLineEdit()
+        errorBoundField.setObjectName("Error Bound")
+        errorBoundField.setReadOnly(True)
         hBox2.addWidget(precisionLabel)
         hBox2.addWidget(precisionField)
         hBox2.addWidget(timeLabel)
         hBox2.addWidget(timeField)
+        hBox2.addWidget(errorBoundLabel)
+        hBox2.addWidget(errorBoundField)
         qWidget3.setLayout(hBox2)
         qVbox.addWidget(qTable)
         qVbox.addWidget(qWidget2)
@@ -433,6 +440,12 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
             type(precisionField))
         precisionField.setText(str(precision))
 
+    def drawErrorBound(self, error, errorBoundField):
+        assert type(error) is float or int, "error bound is not of type float nor int!: " + str(type(error))
+        assert type(errorBoundField) is QtGui.QLineEdit, "errorBoundField is not of type QtGui.QLineEdit!: " + str(
+            type(errorBoundField))
+        errorBoundField.setText(str(('%g' % error)))
+
     def drawTime(self, time, timeField):
         assert type(time) is float or int, "time is not of type float nor int!: " + str(type(time))
         assert type(timeField) is QtGui.QLineEdit, "timeField is not of type QtGui.QLineEdit!: " + str(type(timeField))
@@ -447,6 +460,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
         self.plotError(resultSet.getErrors())
         self.plotRoot(resultSet.getRoots())
+        if resultSet.getErrorBound() != None:
+            self.drawErrorBound(resultSet.getErrorBound(), qWidget.findChild(QtGui.QLineEdit, "Error Bound"))
 
     def showErrorMessage(self, error):
         msg = QtGui.QMessageBox()
