@@ -42,7 +42,8 @@ def fixed_point(func, x0, iterations=50, eps=0.00001):
     table = Table("Fixed-Point", ['Step', 'xi', 'xi+1', 'Abs. Error'], iterationRows)
 
     return ResultSet(table, xi, calcPrecision(ea_rel), executionTime, i + 1,
-                     equation(func), errors=errors, roots=roots, boundaries=boundaries)
+                     equation(func), errors=errors, roots=roots, boundaries=boundaries,
+                     errorBound=abs(evaluateNthDerivative(func, x0, 1) * (x0 - xi)))
 
 
 # Test
