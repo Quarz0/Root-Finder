@@ -8,7 +8,7 @@ from util import *
 
 def false_position(func, xl, xu, iterations=50, eps=0.00001):
     if evaluateFunc(func, xl) * evaluateFunc(func, xu) > 0:
-        return float('nan')
+        raise ValueError
 
     boundaries = []
     iterationRows = []

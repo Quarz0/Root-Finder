@@ -9,7 +9,7 @@ from util import *
 
 def bisection(func, xl, xu, iterations=50, eps=0.00001):
     if evaluateFunc(func, xl) * evaluateFunc(func, xu) > 0:
-        return float('nan')
+        raise ValueError
 
     k = int((log10(xu - xl) - log10(eps)) / log10(2.0))
     boundaries = []
