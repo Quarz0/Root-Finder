@@ -44,6 +44,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         QtGui.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
+        self.setWindowTitle("Root-Finder by M&H")
         self.figs = [(Figure(), [self.plt1, self.mplvl1, self.mplwindow1]),
                      (Figure(), [self.plt2, self.mplvl2, self.mplwindow2]),
                      (Figure(), [self.plt3, self.mplvl3, self.mplwindow3])]
@@ -188,6 +189,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot(int)
     def handleResultTabChanging(self, index):
+        if len(self.tempResultSets) <= index:
+            return
         item = self.tempResultSets[index]
         for tab in self.tempTables:
             tab.clearSelection()
@@ -373,21 +376,23 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         for i in xrange(len(xs)):
             self.plt1.scatter(xs[i], ys[i], marker="x", s=100, c=np.random.rand(3, 1))
 
-    def plotError(self, errors):
+    def plotError(self, errors, label):
         err = []
         its = []
         for i in xrange(1, len(errors)):
             err.append(errors[i][1])
             its.append(errors[i][0])
-        self.plt2.plot(its, err, c=np.random.rand(3, 1))
+        self.plt2.plot(its, err, c=np.random.rand(3, 1), label=label)
+        self.plt2.legend()
 
-    def plotRoot(self, roots):
+    def plotRoot(self, roots, label):
         root = []
         its = []
         for (i, r) in roots:
             root.append(r)
             its.append(i)
-        self.plt3.plot(its, root, c=np.random.rand(3, 1))
+        self.plt3.plot(its, root, c=np.random.rand(3, 1), label=label)
+        self.plt3.legend()
 
     def drawTable(self, table):
         assert type(table) is Table, "table is not of type Table!: " + str(type(table))
@@ -458,8 +463,8 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         self.drawRoot(resultSet.getRoot(), qWidget.findChild(QtGui.QLineEdit, "Root"))
         self.drawPrecision(resultSet.getPrecision(), qWidget.findChild(QtGui.QLineEdit, "Precision"))
         self.drawTime(resultSet.getExecutionTime(), qWidget.findChild(QtGui.QLineEdit, "Time"))
-        self.plotError(resultSet.getErrors())
-        self.plotRoot(resultSet.getRoots())
+        self.plotError(resultSet.getErrors(), resultSet.getTable().getTitle())
+        self.plotRoot(resultSet.getRoots(), resultSet.getTable().getTitle())
         if resultSet.getErrorBound() != None:
             self.drawErrorBound(resultSet.getErrorBound(), qWidget.findChild(QtGui.QLineEdit, "Error Bound"))
 
