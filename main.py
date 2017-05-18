@@ -148,7 +148,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
                                 evaluateFunc(
                                     self.tempResultSets[len(self.tempResultSets) - 1].getEquation().get_eqn(),
                                     self.tempResultSets[len(self.tempResultSets) - 1].getRoot()))) + ')'
-                except (ValueError) as e:
+                except (ValueError, TypeError) as e:
                     print e
                     if not errs:
                         errs += method
@@ -470,7 +470,7 @@ class Main(QtGui.QMainWindow, Ui_MainWindow):
         msg.setText("Evaluation failure")
         msg.setInformativeText("An error occurred while trying to evaluate the root(s)")
         msg.setWindowTitle("Error!")
-        msg.setDetailedText('A divison by zero occured in the following method(s):\n' + error)
+        msg.setDetailedText('A division by zero occured in the following method(s):\n' + error)
         msg.setStandardButtons(QtGui.QMessageBox.Ok)
         msg.exec_()
 
