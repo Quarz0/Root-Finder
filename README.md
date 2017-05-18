@@ -7,6 +7,7 @@ It supports the following root finding algorithms:-
 - Secant
 - Fixed-Point
 - Birge-Vieta
+
 The user can choose to solve an equation using one or multiple methods, and also provide each method with its required parameters.
 
 # General Method:-
@@ -16,6 +17,7 @@ The general method works as follows:
 - It proceeds by testing the fixed-point convergence criteria, and applies it if true
 - If the latter was a false condition, a solution is generated using the modified-Newton-Raphson method
 - If no solution found, repeat
+
 And for the method not to get stuck in an infinite loop in the case of no solution after several unsuccessful trials, another stopping criteria was added which is a one-minute time limit for the algorithm to find the most accurate answer possible or else raise an error flag.
 
 # Other features:-
